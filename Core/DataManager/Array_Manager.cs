@@ -75,14 +75,13 @@ namespace PKX_Extraction.Core.DataManager
         /// </summary>
         /// <param name="pokemon">list of list data is being added to</param>
         /// <param name="row">the index of the list of list the data is being added to</param>
-        /// <param name="start1">Where to start in the colum in the list of list</param>
         /// <param name="data">The 1d donor data</param>
         /// <param name="start2">where to start in the donor 1D array</param>
         /// <param name="length">The length of data to donate</param>
-        public void AddPart1Dto2D(List<List<byte>> pokemon, int row, int start1, byte[] data, int start2, int length)
+        public void AddPart1Dto2D(List<List<byte>> pokemon, int row, byte[] data, int start, int length)
         {
             for (int i = 0; i < length; i++)
-                pokemon[row][start1 + i] = data[start2 + i];
+                pokemon[row].Add(data[start + i]);
         }
 
         /// <summary>

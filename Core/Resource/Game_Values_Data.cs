@@ -48,7 +48,7 @@ namespace PKX_Extraction.Core.Resource
                 partyDataSize = 48;
                 effortTotal = 327675;
                 isEncrypted = false;
-                invert = true;
+                invert = false;
                 option = 0;
             }
 

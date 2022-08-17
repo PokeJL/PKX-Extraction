@@ -164,7 +164,7 @@ namespace PKX_Extraction
             {
                 byte[] saveData = new byte[gv.StorageDataSize];
 
-                if (val.Gen == 1 || val.Gen == 2)
+                if (val.Gen == 1 || (val.Gen == 2 && val.SubGen != 2))
                 {
                     saveData = fix.Gen12Fix(pokemon, slot, gv.StorageDataSize, val.Gen);
                 }
@@ -350,7 +350,7 @@ namespace PKX_Extraction
                             val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
                         else if (val.Gen == 1)
                             val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
-                        else
+                        else if (val.Gen > 2)
                             val.DexNum = hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert);
 
                         ItemObject[i] = data.getPokemonName(val.DexNum);
@@ -427,7 +427,7 @@ namespace PKX_Extraction
             games[2] = "Colosseum";
             games[3] = "XD";
             //games[5] = "PBR Friend Pass";
-            selectGameCB.Items.AddRange(games); //Adjust combo box range
+            selectGameCB.Items.AddRange(games); //NOTE Adjust combo box range
             selectGameCB.SelectedIndex = 0;
 
             Info.Text = "This mode is for spin off games.";

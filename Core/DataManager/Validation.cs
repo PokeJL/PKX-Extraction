@@ -224,7 +224,7 @@ namespace PKX_Extraction.Core.DataManager
         {
             offset_Data.SetValues(gen, subGen);
 
-            if (option != 2)
+            if (option != 2 || option != 3)
             {
                 if ((hex.LittleEndian(buffer, offset_Data.HPEV, offset_Data.SizeHPEV, invert) +
                     hex.LittleEndian(buffer, offset_Data.AttEV, offset_Data.SizeAttEV, invert) +
