@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
+/// <summary>
+/// File from PKHeX. Used to break encryption
+/// and get size values.
+/// </summary>
+
 namespace PKX_Extraction.Core.DataManager
 {
     class PokeCrypto

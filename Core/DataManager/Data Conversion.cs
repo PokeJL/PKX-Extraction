@@ -127,6 +127,10 @@ namespace PKX_Extraction.Core.DataManager
             }
         }
 
+        /// <summary>
+        /// Inverts a 1D array
+        /// </summary>
+        /// <param name="buffer">Data needing to be inverted</param>
         private static void Invert(byte[] buffer)
         {
             int m = buffer.Length - 1;
@@ -140,7 +144,7 @@ namespace PKX_Extraction.Core.DataManager
         }
 
         //Two byte hex to int
-        private int Int16(/*string t*/byte[] buffer)
+        private int Int16(byte[] buffer)
         {
             return buffer[0] << 8 | buffer[1];
         }
@@ -157,6 +161,13 @@ namespace PKX_Extraction.Core.DataManager
             return buffer[0] << 32 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
         }
 
+        /// <summary>
+        /// Converts byte data to a string
+        /// </summary>
+        /// <param name="data">The provided data</param>
+        /// <param name="offset">Where to start in the data</param>
+        /// <param name="length">Length of data needing to be converted</param>
+        /// <returns></returns>
         public string HexToBinaryString (byte[] data, int offset, int length)
         {
             string hexString;
@@ -178,6 +189,13 @@ namespace PKX_Extraction.Core.DataManager
             return hexString;
         }
 
+        /// <summary>
+        /// Converts a sting of binary data to int
+        /// </summary>
+        /// <param name="word">The string needing to convert to int</param>
+        /// <param name="start">Where to start in string</param>
+        /// <param name="end">Where to stop in the string</param>
+        /// <returns></returns>
         public int BinaryStringToInt(string word, int start, int end)
         {
             string temp;

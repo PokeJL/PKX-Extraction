@@ -36,15 +36,24 @@ namespace PKX_Extraction.Core.Generation
             checkP = new();
         }
 
+        /// <summary>
+        /// Starts the linear search to find Pokemon in the RAM
+        /// </summary>
+        /// <param name="pokemon">List of Pokemon</param>
+        /// <param name="val">Basic valuse needed for the application</param>
+        /// <param name="offset_Data">The offsets of the Pokemon values</param>
+        /// <param name="gv">Contains the target games parameters</param>
         public void SearchPokemon(List<List<byte>> pokemon, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
         {
             byte[] buffer = new byte[gv.PartyDataSize];
             int updateTime;
             byte[] inputFile = val.FileData;
-
+            //Ensures that the RAM file is larger then a Pokemon in your party
             if (inputFile.Length >= gv.PartyDataSize)
             {
-                updateTime = UpdateBar(inputFile.Length);
+                updateTime = UpdateBar(inputFile.Length); //Gets update intervals
+
+                //Loops to the end of the RAM file
                 for (int i = 0; i < inputFile.Length; i++)
                 {
                     //Ends the rip process
@@ -53,20 +62,23 @@ namespace PKX_Extraction.Core.Generation
                         val.Found = 0;
                         break;
                     }
-
-                    if (i + gv.PartyDataSize <= inputFile.Length && check.ChecksumStart(inputFile, gv.Option, i, val.Gen, val.SubGen, gv.Invert) /*hex.LittleEndian(inputFile, i + offset_Data.GetChecksum(), 2) != 0*/)
+                    //Ensures the that the size for the Pokemon stored in the party plus the current
+                    //index of the loop isn't past the input length.
+                    //Initial check of data to make sure the current data doesn't have a checksum of 0
+                    if (i + gv.PartyDataSize <= inputFile.Length && check.ChecksumStart(inputFile, gv.Option, i, val.Gen, val.SubGen, gv.Invert))
                     {
+                        //loads data into buffer
                         for (int n = 0; n < gv.PartyDataSize; n++)
                         {
                             buffer[n] = inputFile[i + n];
                         }
-
+                        //Checks the game values if the data is encrypted or not
                         if (gv.IsEncrypted == true)
-                            Encrypted(pokemon, buffer, i, val, offset_Data, gv);
+                            Encrypted(pokemon, buffer, val, offset_Data, gv);
                         else
-                            NonEncrypted(pokemon, buffer, i, val, offset_Data, gv);
+                            NonEncrypted(pokemon, buffer, val, offset_Data, gv);
                     }
-
+                    //Updates the progress bar
                     ProgressUpdate(i, updateTime, inputFile);
                 }
             }
@@ -77,10 +89,18 @@ namespace PKX_Extraction.Core.Generation
             }
         }
 
-        private void Encrypted(List<List<byte>> pokemon, byte[] buffer, int i, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
+        /// <summary>
+        /// Breaks the encryption if the data is encrypted
+        /// </summary>
+        /// <param name="pokemon"></param>
+        /// <param name="buffer"></param>
+        /// <param name="val"></param>
+        /// <param name="offset_Data"></param>
+        /// <param name="gv"></param>
+        private void Encrypted(List<List<byte>> pokemon, byte[] buffer, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
         {
             byte[] convert = new byte[1];
-
+            //Breaks encryption based on gen
             if (val.Gen == 3)
                 convert = start.PK3(buffer);
             else if (val.Gen == 4)
@@ -91,18 +111,26 @@ namespace PKX_Extraction.Core.Generation
                 convert = start.PK67(buffer);
             else if (val.Gen == 8)
                 convert = start.PK8(buffer);
-
+            //Battle tower shiny fix
             if (val.Gen == 3)
                 exceptions.FRLGTrainerTower(ref convert);
 
-            NonEncrypted(pokemon, convert, i, val, offset_Data, gv);
+            NonEncrypted(pokemon, convert, val, offset_Data, gv);
         }
 
-        private void NonEncrypted(List<List<byte>> pokemon, byte[] buffer, int i, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
+        /// <summary>
+        /// For non encrypted data and where it's determined if the data is a Pokemon
+        /// </summary>
+        /// <param name="pokemon"></param>
+        /// <param name="buffer"></param>
+        /// <param name="val"></param>
+        /// <param name="offset_Data"></param>
+        /// <param name="gv"></param>
+        private void NonEncrypted(List<List<byte>> pokemon, byte[] buffer, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
         {
-            bool update = false;
             int currentDexNum;
-
+            //Gets the Pokemon correct dex number to determine if the data is a Pokemon
+            //Gen 1 and 3 have Pokemon with the incorrect numbers
             if (val.Gen == 1)
                 currentDexNum = dexCon.GetGen1Num(hex.LittleEndian(buffer, offset_Data.Dex, offset_Data.SizeDex, gv.Invert));
             else if (val.Gen == 3)
@@ -110,27 +138,31 @@ namespace PKX_Extraction.Core.Generation
             else
                 currentDexNum = hex.LittleEndian(buffer, offset_Data.Dex, offset_Data.SizeDex, gv.Invert);          
 
+            //Checks if the data is a Pokemon
             if (checkP.IsPokemon(buffer, currentDexNum, val, offset_Data, gv))
             {
-                arr.UpdateCheck(pokemon, val.Found, buffer, ref update, val.Gen, val.SubGen, gv.Invert);
-                if (!update)
+                //Checks if the found Pokemon was already found else where in the RAM
+                if (arr.UpdateCheck(pokemon, val.Found, buffer, val.Gen, val.SubGen, gv.Invert))
                 {
+                    //If the Pokemon is new add to the Pokemon list
                     arr.Array1Dto2D(pokemon, val.Found, gv.StorageDataSize, buffer);
                     val.Found += 1;
                 }
             }
         }
 
+        /// <summary>
+        /// Updates progress bar
+        /// </summary>
+        /// <param name="progress">How much the loop has gone</param>
+        /// <param name="time">the update time intervals</param>
+        /// <param name="data">the data file</param>
         private void ProgressUpdate(int progress, int time, byte[] data)
         {
-            if (progress % time == 0)
-            {
+            if (progress % time == 0) //Update bar if module is 0
                 CP(progress);
-            }
-            else if (progress + 1 == data.Length)
-            {
+            else if (progress + 1 == data.Length) //Update bar if the next loop is the last
                 CP(progress);
-            }
         }
 
         //163 allows for update intervals that don't slow down the process by delaying the update by a bit

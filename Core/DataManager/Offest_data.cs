@@ -7,6 +7,13 @@ using PKX_Extraction.Core.Resource;
 
 namespace PKX_Extraction.Core.DataManager
 {
+    /// <summary>
+    /// You're a Pokemon fan and a programmer. I'm
+    /// sure you can figure this one out. ;)
+    /// Fine stores the index of the data if
+    /// the Pokemon is in a 1D array and the length
+    /// of each value incase changes between games.
+    /// </summary>
     public class Offest_data
     {
         Offset offset = new Offset();
