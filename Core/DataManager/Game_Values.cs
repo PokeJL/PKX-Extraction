@@ -7,76 +7,35 @@ using PKX_Extraction.Core.Resource;
 
 namespace PKX_Extraction.Core.DataManager
 {
-    class Game_Values
+    public class Game_Values
     {
-        Game_Values_Data data;
-        private int storageDataSize;
-        private int partyDataSize;
-        private int effortTotal;
-        private bool isEncrypted;
-        private bool invert;
-        private int option;
-        private int numOfPokeInGen;
-        private int numOfMovesInGen;
+        Game_Values_Data data = new ();
 
-        public Game_Values()
-        {
-            data = new();
-
-            storageDataSize = 0;
-            partyDataSize = 0;
-            effortTotal = 0;
-            isEncrypted = true;
-            invert = true;
-            option = 0;
-            numOfPokeInGen = 0;
-            numOfMovesInGen = 0;
-        }
-
-        public int GetColumn()
-        {
-            return storageDataSize;
-        }
-
-        public int GetSize()
-        {
-            return partyDataSize;
-        }
-
-        public int GetEffortTotal()
-        {
-            return effortTotal;
-        }
-
-        public bool GetIsEncrypted()
-        {
-            return isEncrypted;
-        }
-
-        public bool GetInvert()
-        {
-            return invert;
-        }
-
-        public int GetOption()
-        {
-            return option;
-        }
-
-        public int GetNumOfPokeInGen()
-        {
-            return numOfPokeInGen;
-        }
-
-        public int GetNumOfMovesInGen()
-        {
-            return numOfMovesInGen;
-        }
+        public int StorageDataSize { get; set; } = 0;
+        public int PartyDataSize { get; set; } = 0;
+        public int EffortTotal { get; set; } = 0;
+        public bool IsEncrypted { get; set; } = true;
+        public bool Invert { get; set; } = true;
+        public int Option { get; set; } = 0;
+        public int NumOfPokeInGen { get; set; } = 0;
+        public int NumOfMovesInGen { get; set; } = 0;
 
         public void SetValues(int gen, int subGen)
         {
-            data.GameData(ref storageDataSize, ref partyDataSize, ref effortTotal, ref isEncrypted,
-                        ref invert, ref option, ref numOfPokeInGen, ref numOfMovesInGen, gen, subGen);
+            int sds = 0, pds = 0, et = 0, o = 0, np = 0, nm = 0;
+            bool ie = true, i = true;
+
+            data.GameData(ref sds, ref pds, ref et, ref ie,
+                        ref i, ref o, ref np, ref nm, gen, subGen);
+
+            StorageDataSize = sds;
+            PartyDataSize = pds;
+            EffortTotal = et;
+            IsEncrypted = ie;
+            Invert = i;
+            Option = o;
+            NumOfPokeInGen = np;
+            NumOfMovesInGen = nm;
         }
     }
 }

@@ -76,9 +76,9 @@ namespace PKX_Extraction
             {
                 var sr = new StreamReader(openFileDialog1.FileName);
                 OpenFileTXB.Text = string.Format("{0}", openFileDialog1.FileName); //Show file path in textbox
-                val.SetFileAdded(true); //fileAdded = true;
-                val.SetPath(string.Format("{0}", openFileDialog1.FileName));
-                FileInfo fi = new(val.GetPath());
+                val.FileAdded = true; //fileAdded = true;
+                val.Path = string.Format("{0}", openFileDialog1.FileName);
+                FileInfo fi = new(val.Path);
             }
             catch (SecurityException ex)
             {
@@ -86,7 +86,7 @@ namespace PKX_Extraction
                 $"Details:\n\n{ex.StackTrace}");
             }
 
-            if (val.GetFileAdded() == true)
+            if (val.FileAdded == true)
                 extractBTN.Enabled = true;
         }
 
@@ -101,13 +101,13 @@ namespace PKX_Extraction
                 extractBTN.Text = "Stop";
                 OpenFileBTN.Enabled = false;
                 pkmSelect.Enabled = false;
-                val.SetEndTask(false);
+                val.EndTask = false;
                 backgroundWorker1.RunWorkerAsync();
             }
             else
             {
                 backgroundWorker1.CancelAsync();
-                val.SetEndTask(true);
+                val.EndTask = true;
                 pkmSelect.Items.Clear();
                 OpenFileBTN.Enabled = true;
                 RipProgressBar.Value = 0;
@@ -124,35 +124,35 @@ namespace PKX_Extraction
         {
             SaveFileDialog saveFileDialog1 = new();
 
-            if (val.GetGen() == 3)
+            if (val.Gen == 3)
             {
                 saveFileDialog1.Filter = "PK3|*.pk3";
             }
-            if (val.GetGen() == 4)
+            if (val.Gen == 4)
             {
                 saveFileDialog1.Filter = "PK4|*.pk4";
             }
-            if (val.GetGen() == 5)
+            if (val.Gen == 5)
             {
                 saveFileDialog1.Filter = "PK5|*.pk5";
             }
-            if (val.GetGen() == 2)
+            if (val.Gen == 2)
             {
                 saveFileDialog1.Filter = "PK6|*.pk6";
             }
-            if (val.GetGen() == 2)
+            if (val.Gen == 2)
             {
                 saveFileDialog1.Filter = "PK2|*.pk2";
             }
-            if (val.GetGen() == 1)
+            if (val.Gen == 1)
             {
                 saveFileDialog1.Filter = "PK1|*.pk1";
             }
-            if (val.GetGen() == 7 && val.GetSubGen() == 0)
+            if (val.Gen == 7 && val.SubGen == 0)
             {
                 saveFileDialog1.Filter = "PK7|*.pk7";
             }
-            if (val.GetGen() == 8 && val.GetSubGen() == 0)
+            if (val.Gen == 8 && val.SubGen == 0)
             {
                 saveFileDialog1.Filter = "PK8|*.pk8";
             }
@@ -162,15 +162,15 @@ namespace PKX_Extraction
 
             if (saveFileDialog1.FileName != "")
             {
-                byte[] saveData = new byte[gv.GetColumn()];
+                byte[] saveData = new byte[gv.StorageDataSize];
 
-                if (val.GetGen() == 1 || val.GetGen() == 2)
+                if (val.Gen == 1 || val.Gen == 2)
                 {
-                    saveData = fix.Gen12Fix(pokemon, slot, gv.GetColumn(), val.GetGen());
+                    saveData = fix.Gen12Fix(pokemon, slot, gv.StorageDataSize, val.Gen);
                 }
                 else
                 {
-                    for (int i = 0; i < gv.GetColumn(); i++)
+                    for (int i = 0; i < gv.StorageDataSize; i++)
                     {
                         saveData[i] = pokemon[slot][i];
                     }
@@ -182,20 +182,20 @@ namespace PKX_Extraction
 
         private void pkmSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            val.SetSelectIndex(pkmSelect.SelectedIndex);
+            val.SelectIndex = pkmSelect.SelectedIndex;
 
             if (list.Count == 0)
                 list.Add("1");
 
-            if (val.GetGen() == 2 && val.GetSubGen() == 2)
+            if (val.Gen == 2 && val.SubGen == 2)
             {
                 Gen_2_Beta_Data beta = new();
-                if (val.GetDexNum() >= 152)
-                    list[0] = "d97_" + val.GetDexNum().ToString();
+                if (val.DexNum >= 152)
+                    list[0] = "d97_" + val.DexNum.ToString();
                 else
-                    list[0] = "b_" + val.GetDexNum().ToString();
-                pokemonInfoTXB.Text = beta.GetNameString(val.GetDexNum()) + Environment.NewLine;
-                pokemonInfoTXB.Text += "ID: " + hex.LittleEndian2D(pokemon, val.GetSelectIndex(), 9, 2, gv.GetInvert()).ToString() + Environment.NewLine;
+                    list[0] = "b_" + val.DexNum.ToString();
+                pokemonInfoTXB.Text = beta.GetNameString(val.DexNum) + Environment.NewLine;
+                pokemonInfoTXB.Text += "ID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, 9, 2, gv.Invert).ToString() + Environment.NewLine;
                 pokemonInfoTXB.Text += "SID: 00000" + Environment.NewLine;
                 pokemonInfoTXB.Text += "Move 1: " + data.getMove(hex.ConOneHex(pokemon[0][5])) + Environment.NewLine;
                 pokemonInfoTXB.Text += "Move 2: " + data.getMove(hex.ConOneHex(pokemon[0][6])) + Environment.NewLine;
@@ -204,32 +204,32 @@ namespace PKX_Extraction
             }
             else
             {
-                if (val.GetGen() == 3)
-                    val.SetDexNum(dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetDex()/*val.GetSpeciesIndex()*/, offest.GetSizeDex()/*2*/, gv.GetInvert()/*val.GetInvert()*/)));
-                else if (val.GetGen() == 1)
-                    val.SetDexNum(dex.GetGen1Num(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetDex(), offest.GetSizeDex(), gv.GetInvert())));
+                if (val.Gen == 3)
+                    val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert));
+                else if (val.Gen == 1)
+                    val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert));
                 else
-                    val.SetDexNum(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetDex()/*val.GetSpeciesIndex()*/, offest.GetSizeDex()/*2*/, gv.GetInvert()/*val.GetInvert()*/));
+                    val.DexNum = hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert);
 
-                pokemonInfoTXB.Text = data.getPokemonName(val.GetDexNum()) + Environment.NewLine;
-                pokemonInfoTXB.Text += "ID: " + hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetID(), offest.GetSizeID(), gv.GetInvert()).ToString() + Environment.NewLine;
-                if (val.GetGen() == 1 || val.GetGen() == 2)
+                pokemonInfoTXB.Text = data.getPokemonName(val.DexNum) + Environment.NewLine;
+                pokemonInfoTXB.Text += "ID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, offest.ID, offest.SizeID, gv.Invert).ToString() + Environment.NewLine;
+                if (val.Gen == 1 || val.Gen == 2)
                     pokemonInfoTXB.Text += "SID: 00000" + Environment.NewLine;
                 else
-                    pokemonInfoTXB.Text += "SID: " + hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetSID(), offest.GetSizeSID(), gv.GetInvert()).ToString() + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 1: " + data.getMove(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetMove1(), offest.GetSizeMove1(), gv.GetInvert())) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 2: " + data.getMove(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetMove2(), offest.GetSizeMove2(), gv.GetInvert())) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 3: " + data.getMove(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetMove3(), offest.GetSizeMove3(), gv.GetInvert())) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 4: " + data.getMove(hex.LittleEndian2D(pokemon, val.GetSelectIndex(), offest.GetMove4(), offest.GetSizeMove4(), gv.GetInvert())) + Environment.NewLine;
+                    pokemonInfoTXB.Text += "SID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, offest.SID, offest.SizeSID, gv.Invert).ToString() + Environment.NewLine;
+                pokemonInfoTXB.Text += "Move 1: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move1, offest.SizeMove1, gv.Invert)) + Environment.NewLine;
+                pokemonInfoTXB.Text += "Move 2: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move2, offest.SizeMove2, gv.Invert)) + Environment.NewLine;
+                pokemonInfoTXB.Text += "Move 3: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move3, offest.SizeMove3, gv.Invert)) + Environment.NewLine;
+                pokemonInfoTXB.Text += "Move 4: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move4, offest.SizeMove4, gv.Invert)) + Environment.NewLine;
 
-                list[0] = "b_" + val.GetDexNum().ToString();
+                list[0] = "b_" + val.DexNum.ToString();
             }
             Icon.Image = (Bitmap)Properties.Resources.ResourceManager.GetObject(list[0]);
         }
 
         private void saveBTN_Click(object sender, EventArgs e)
         {
-            SaveDialog(val.GetSelectIndex());
+            SaveDialog(val.SelectIndex);
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -239,40 +239,40 @@ namespace PKX_Extraction
                 e.Cancel = true;
                 return;
             }
-            if (val.GetFileAdded() == true)
+            if (val.FileAdded == true)
             {
 
                 if (mainGameRBT.Checked == true)
                 {
-                    if (val.GetComboSelect() == 1)
+                    if (val.ComboSelect == 1)
                     {
                         SetClasses(1, 0);
                     }
-                    if (val.GetComboSelect() == 2)
+                    if (val.ComboSelect == 2)
                     {
                         SetClasses(2, 0);
                     }
-                    if (val.GetComboSelect() == 3)
+                    if (val.ComboSelect == 3)
                     {
                         SetClasses(3, 0);
                     }
-                    if (val.GetComboSelect() == 4)
+                    if (val.ComboSelect == 4)
                     {
                         SetClasses(4, 0);
                     }
-                    if (val.GetComboSelect() == 5)
+                    if (val.ComboSelect == 5)
                     {
                         SetClasses(5, 0);
                     }
-                    if (val.GetComboSelect() == 6)
+                    if (val.ComboSelect == 6)
                     {
                         SetClasses(6, 0);
                     }
-                    if (val.GetComboSelect() == 7)
+                    if (val.ComboSelect == 7)
                     {
                         SetClasses(7, 0);
                     }
-                    if (val.GetComboSelect() == 8)
+                    if (val.ComboSelect == 8)
                     {
                         SetClasses(8, 0);
                     }
@@ -280,15 +280,15 @@ namespace PKX_Extraction
 
                 if (spinOffRBT.Checked == true) //Fix all when stadium is added
                 {
-                    if (val.GetComboSelect() == 1)
+                    if (val.ComboSelect == 1)
                     {
                         SetClasses(2, 2);
                     }
-                    if (val.GetComboSelect() == 2)
+                    if (val.ComboSelect == 2)
                     {
                         SetClasses(3, 1);
                     }
-                    if (val.GetComboSelect() == 3)
+                    if (val.ComboSelect == 3)
                     {
                         SetClasses(3, 2);
                     }
@@ -296,12 +296,12 @@ namespace PKX_Extraction
 
                 if (spinOffRBT.Checked == true) //Fix when stadium is added
                 {
-                    if (val.GetComboSelect() == 1)
+                    if (val.ComboSelect == 1)
                     {
                         Gen_2_SW97 g2 = new();
                         g2.Start(pokemon, string.Format("{0}", openFileDialog1.FileName), val, gv);
                     }
-                    else if (val.GetComboSelect() == 2 || val.GetComboSelect() == 3)
+                    else if (val.ComboSelect == 2 || val.ComboSelect == 3)
                     {
                         fm.LoadData(string.Format("{0}", openFileDialog1.FileName), val);
                         rip.SearchPokemon(pokemon, val, offest, gv);
@@ -318,15 +318,15 @@ namespace PKX_Extraction
                 System.Windows.Forms.MessageBox.Show("No file added.");
             }
 
-            System.Windows.Forms.MessageBox.Show(val.GetFound().ToString() + " Pokemon found.");
+            System.Windows.Forms.MessageBox.Show(val.Found.ToString() + " Pokemon found.");
 
             BindComboBoxData();
         }
 
         private void SetClasses(int gen, int subGen)
         {
-            val.SetGen(gen);
-            val.SetSubGen(subGen);
+            val.Gen = gen;
+            val.SubGen = subGen;
             gv.SetValues(gen, subGen);
             offest.SetValues(gen, subGen);
         }
@@ -340,20 +340,20 @@ namespace PKX_Extraction
             }
             else
             {
-                object[] ItemObject = new object[val.GetFound()];
-                if (val.GetFound() != 0)
+                object[] ItemObject = new object[val.Found];
+                if (val.Found != 0)
                 {
                     pkmSelect.Items.Clear();
-                    for (int i = 0; i < val.GetFound(); i++)
+                    for (int i = 0; i < val.Found; i++)
                     {
-                        if (val.GetGen() == 3)
-                            val.SetDexNum(dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, i, offest.GetDex()/*val.GetSpeciesIndex()*/, offest.GetSizeDex()/*2*/, gv.GetInvert()/*val.GetInvert()*/)));
-                        else if (val.GetGen() == 1)
-                            val.SetDexNum(dex.GetGen1Num(hex.LittleEndian2D(pokemon, i, offest.GetDex(), offest.GetSizeDex(), gv.GetInvert())));
+                        if (val.Gen == 3)
+                            val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
+                        else if (val.Gen == 1)
+                            val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
                         else
-                            val.SetDexNum(hex.LittleEndian2D(pokemon, i, offest.GetDex()/*val.GetSpeciesIndex()*/, offest.GetSizeDex()/*2*/, gv.GetInvert()/*val.GetInvert()*/));
+                            val.DexNum = hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert);
 
-                        ItemObject[i] = data.getPokemonName(val.GetDexNum());
+                        ItemObject[i] = data.getPokemonName(val.DexNum);
                     }
                     pkmSelect.Items.AddRange(ItemObject);
                     pkmSelect.SelectedIndex = 0;
@@ -393,7 +393,7 @@ namespace PKX_Extraction
 
         public bool Stopper()
         {
-            return val.GetEndTask();
+            return val.EndTask;
         }
 
         private void mainGameRBT_CheckedChanged(object sender, EventArgs e)
@@ -447,14 +447,14 @@ namespace PKX_Extraction
             }
             else
             {
-                val.SetComboSelect(selectGameCB.SelectedIndex);
+                val.ComboSelect = selectGameCB.SelectedIndex;
                 OpenFileBTN.Enabled = true;
                 OpenFileTXB.Enabled = true;
 
                 if (mainGameRBT.Checked == true)
-                    Info.Text = mess.MainLine(val.GetComboSelect());
+                    Info.Text = mess.MainLine(val.ComboSelect);
                 else
-                    Info.Text = mess.SpinOff(val.GetComboSelect());
+                    Info.Text = mess.SpinOff(val.ComboSelect);
             }
         }
 

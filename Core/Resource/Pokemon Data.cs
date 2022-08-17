@@ -908,8 +908,14 @@ namespace PKX_Extraction.Core.Resource
 "Regidrago",
 "Glastrier",
 "Spectrier",
-"Calyrex"
-
+"Calyrex",
+"Wyrdeer",
+"Kleavor",
+"Ursaluna",
+"Basculegion",
+"Sneasler",
+"Overqwil",
+"Enamorus"
         };
 
         private string[] moves =
@@ -1740,7 +1746,31 @@ namespace PKX_Extraction.Core.Resource
 "Thunderous Kick",
 "Glacial Lance",
 "Astral Barrage",
-"Eerie Spell"
+"Eerie Spell",
+                "Dire Claw",
+"Psyshield Bash",
+"Power Shift",
+"Stone Axe",
+"Springtide Storm",
+"Mystical Power",
+"Raging Fury",
+"Wave Crash",
+"Chloroblast",
+"Mountain Gale",
+"Victory Dance",
+"Headlong Rush",
+"Barb Barrage",
+"Esper Wing",
+"Bitter Malice",
+"Shelter",
+"Triple Arrows",
+"Infernal Parade",
+"Ceaseless Edge",
+"Bleakwind Storm",
+"Wildbolt Storm",
+"Sandsear Storm",
+"Lunar Blessing",
+"Take Heart"
         };
 
         public Pokemon_Data() { }

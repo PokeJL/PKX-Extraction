@@ -33,41 +33,15 @@ namespace PKX_Extraction.Core.DataManager
         {
             Data_Conversion hex = new();
             Offest_data offset_Data = new();
+            Pokemon_Value_Check check = new();
 
-            //Offset data
             offset_Data.SetValues(gen, subGen);
 
             if (found != 0)
             {
                 for (int f = 0; f < found && update == false; f++)
                 {
-                    if(hex.LittleEndian2D(pokemon, f, offset_Data.GetPID(), offset_Data.GetSizePID(), inversion) == hex.LittleEndian(convert, offset_Data.GetPID(), offset_Data.GetSizePID(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetDex(), offset_Data.GetSizeDex(), inversion) == hex.LittleEndian(convert, offset_Data.GetDex(), offset_Data.GetSizeDex(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetID(), offset_Data.GetSizeID(), inversion) == hex.LittleEndian(convert, offset_Data.GetID(), offset_Data.GetSizeID(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetSID(), offset_Data.GetSizeSID(), inversion) == hex.LittleEndian(convert, offset_Data.GetSID(), offset_Data.GetSizeSID(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetItem(), offset_Data.GetSizeItem(), inversion) == hex.LittleEndian(convert, offset_Data.GetItem(), offset_Data.GetSizeItem(), inversion) && //May cause issue if item is consumed
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetFriendship(), offset_Data.GetSizeFriendship(), inversion) == hex.LittleEndian(convert, offset_Data.GetFriendship(), offset_Data.GetSizeFriendship(), inversion) && //May cause issue if Pokemon fraints
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetAbility(), offset_Data.GetSizeAbility(), inversion) == hex.LittleEndian(convert, offset_Data.GetAbility(), offset_Data.GetSizeAbility(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetHPEV(), offset_Data.GetSizeHPEV(), inversion) == hex.LittleEndian(convert, offset_Data.GetHPEV(), offset_Data.GetSizeHPEV(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetAttEV(), offset_Data.GetSizeAttEV(), inversion) == hex.LittleEndian(convert, offset_Data.GetAttEV(), offset_Data.GetSizeAttEV(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetDefEV(), offset_Data.GetSizeDefEV(), inversion) == hex.LittleEndian(convert, offset_Data.GetDefEV(), offset_Data.GetSizeDefEV(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetSpAttEV(), offset_Data.GetSizeSpAttEV(), inversion) == hex.LittleEndian(convert, offset_Data.GetSpAttEV(), offset_Data.GetSizeSpAttEV(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetSpDefEV(), offset_Data.GetSizeSpDefEV(), inversion) == hex.LittleEndian(convert, offset_Data.GetSpDefEV(), offset_Data.GetSizeSpDefEV(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetSpeedEV(), offset_Data.GetSizeSpeedEV(), inversion) == hex.LittleEndian(convert, offset_Data.GetSpeedEV(), offset_Data.GetSizeSpeedEV(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetCool(), offset_Data.GetSizeCool(), inversion) == hex.LittleEndian(convert, offset_Data.GetCool(), offset_Data.GetSizeCool(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetBeauty(), offset_Data.GetSizeBeauty(), inversion) == hex.LittleEndian(convert, offset_Data.GetBeauty(), offset_Data.GetSizeBeauty(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetCute(), offset_Data.GetSizeCute(), inversion) == hex.LittleEndian(convert, offset_Data.GetCute(), offset_Data.GetSizeCute(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetSmart(), offset_Data.GetSizeSmart(), inversion) == hex.LittleEndian(convert, offset_Data.GetSmart(), offset_Data.GetSizeSmart(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetTough(), offset_Data.GetSizeTough(), inversion) == hex.LittleEndian(convert, offset_Data.GetTough(), offset_Data.GetSizeTough(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetSheen(), offset_Data.GetSizeSheen(), inversion) == hex.LittleEndian(convert, offset_Data.GetSheen(), offset_Data.GetSizeSheen(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), inversion) == hex.LittleEndian(convert, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), inversion) == hex.LittleEndian(convert, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), inversion) == hex.LittleEndian(convert, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), inversion) == hex.LittleEndian(convert, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetNature(), offset_Data.GetSizeNature(), inversion) == hex.LittleEndian(convert, offset_Data.GetNature(), offset_Data.GetSizeNature(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetEncryption(), offset_Data.GetSizeEncryption(), inversion) == hex.LittleEndian(convert, offset_Data.GetEncryption(), offset_Data.GetSizeEncryption(), inversion) &&
-                        hex.LittleEndian2D(pokemon, f, offset_Data.GetEXP(), offset_Data.GetSizeEXP(), inversion) == hex.LittleEndian(convert, offset_Data.GetEXP(), offset_Data.GetSizeEXP(), inversion)
-                        )
+                    if (check.Duplicate(pokemon, convert, inversion, f, offset_Data))
                     {
                         update = true;
                     }

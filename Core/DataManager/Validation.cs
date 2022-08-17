@@ -40,16 +40,16 @@ namespace PKX_Extraction.Core.DataManager
 
             if (option == 0) //Checksum does not equal 0
             {
-                if (hex.LittleEndian(inputFile, i + offset_Data.GetChecksum(), 2, inversion) != 0)
+                if (hex.LittleEndian(inputFile, i + offset_Data.Checksum, 2, inversion) != 0)
                     valid = true;
             }
             else if (option == 1) //Fake checksum check for Colo and XD
             {
-                if (CheckPokemonNameCompare(inputFile, i + offset_Data.GetNickname(), offset_Data.GetNicknameSize()) &&
-                    CheckOTNameCompare(inputFile, i + offset_Data.GetOTName(), offset_Data.GetOTNameSize()) &&
-                    inputFile[i + offset_Data.GetLanguage()] != 0 &&
-                    inputFile[i + offset_Data.GetLanguage()] < 7 &&
-                    ((inputFile[i + offset_Data.GetVersion()] == 9 || inputFile[i + offset_Data.GetVersion()] == 8 || inputFile[i + offset_Data.GetVersion()] == 10 || inputFile[i + offset_Data.GetVersion()] == 1 || inputFile[i + offset_Data.GetVersion()] == 2 && inputFile[i + 16] < 2) || (inputFile[i + offset_Data.GetVersion()] == 11 && inputFile[i + 16] == 0))) //78 = 0x4E & 56 = 0x38
+                if (CheckPokemonNameCompare(inputFile, i + offset_Data.Nickname, offset_Data.NicknameSize) &&
+                    CheckOTNameCompare(inputFile, i + offset_Data.OTName, offset_Data.OTNameSize) &&
+                    inputFile[i + offset_Data.Language] != 0 &&
+                    inputFile[i + offset_Data.Language] < 7 &&
+                    ((inputFile[i + offset_Data.Version] == 9 || inputFile[i + offset_Data.Version] == 8 || inputFile[i + offset_Data.Version] == 10 || inputFile[i + offset_Data.Version] == 1 || inputFile[i + offset_Data.Version] == 2 && inputFile[i + 16] < 2) || (inputFile[i + offset_Data.Version] == 11 && inputFile[i + 16] == 0))) //78 = 0x4E & 56 = 0x38
                     valid = true;
             }
             else if (option == 2)
@@ -58,7 +58,7 @@ namespace PKX_Extraction.Core.DataManager
                     (inputFile[i + 4] == 0 || inputFile[i + 4] == 0x04 || inputFile[i + 4] == 0x08 || inputFile[i + 4] == 0x10 || inputFile[i + 4] == 0x20 || inputFile[i + 4] == 0x40) && //Valid status condition
                     (inputFile[i + 5] == 0x00 || inputFile[i + 5] == 0x01 || inputFile[i + 5] == 0x02 || inputFile[i + 5] == 0x03 || inputFile[i + 5] == 0x04 || inputFile[i + 5] == 0x05 || inputFile[i + 5] == 0x07 || inputFile[i + 5] == 0x08 || inputFile[i + 5] == 0x14 || inputFile[i + 5] == 0x15 || inputFile[i + 5] == 0x16 || inputFile[i + 5] == 0x17 || inputFile[i + 5] == 0x18 || inputFile[i + 5] == 0x19 || inputFile[i + 5] == 0x1A) && //valid type 1
                     (inputFile[i + 6] == 0x00 || inputFile[i + 6] == 0x01 || inputFile[i + 6] == 0x02 || inputFile[i + 6] == 0x03 || inputFile[i + 6] == 0x04 || inputFile[i + 6] == 0x05 || inputFile[i + 6] == 0x07 || inputFile[i + 6] == 0x08 || inputFile[i + 6] == 0x14 || inputFile[i + 6] == 0x15 || inputFile[i + 6] == 0x16 || inputFile[i + 6] == 0x17 || inputFile[i + 6] == 0x18 || inputFile[i + 6] == 0x19 || inputFile[i + 6] == 0x1A) &&
-                    hex.LittleEndian(inputFile, i + offset_Data.GetEXP(), offset_Data.GetSizeEXP(), false) <= 1250000 &&
+                    hex.LittleEndian(inputFile, i + offset_Data.EXP, offset_Data.SizeEXP, false) <= 1250000 &&
                     hex.LittleEndian(inputFile, i + 1, 2, false) <= hex.LittleEndian(inputFile, i + 0x22, 2, false) && //Make sure current HP is less or equal to max HP
                     hex.LittleEndian(inputFile, i + 0x22, 2, false) != 0 && //Make sure max HP does not equal 0
                     hex.LittleEndian(inputFile, i + 0x22, 2, false) <= 710)
@@ -70,7 +70,7 @@ namespace PKX_Extraction.Core.DataManager
             {
                 if ((inputFile[i + 0x1F] > 1 && inputFile[i + 0x1F] <= 100) && //Level between 2 and 100
                     (inputFile[i + 0x20] == 0 || inputFile[i + 0x20] == 0x04 || inputFile[i + 0x20] == 0x08 || inputFile[i + 0x20] == 0x10 || inputFile[i + 0x20] == 0x20 || inputFile[i + 0x20] == 0x40) && //Valid status condition
-                    hex.LittleEndian(inputFile, i + offset_Data.GetEXP(), offset_Data.GetSizeEXP(), false) <= 1250000 &&
+                    hex.LittleEndian(inputFile, i + offset_Data.EXP, offset_Data.SizeEXP, false) <= 1250000 &&
                     hex.LittleEndian(inputFile, i + 0x22, 2, false) <= hex.LittleEndian(inputFile, i + 0x24, 2, false) && //Make sure current HP is less or equal to max HP
                     hex.LittleEndian(inputFile, i + 0x24, 2, false) != 0 && //Make sure make HP does not equal 0
                     hex.LittleEndian(inputFile, i + 0x24, 2, false) <= 713)
@@ -88,7 +88,7 @@ namespace PKX_Extraction.Core.DataManager
 
             if (option == 0) //Calcs checksum to see if it matches the value stored in data
             {
-                if (Checksum(inputFile, offset_Data.GetChecksum(), offset_Data.GetChecksumCalcDataStart(), column, inversion))
+                if (Checksum(inputFile, offset_Data.Checksum, offset_Data.ChecksumCalcDataStart, column, inversion))
                     valid = true;
             }
             else
@@ -115,17 +115,17 @@ namespace PKX_Extraction.Core.DataManager
 
             if (option == 0) //IVs stored in 3 bytes
             {
-                if (bit.IV(inputFile, offset_Data.GetIV()))
+                if (bit.IV(inputFile, offset_Data.IV))
                     valid = true;
             }
             else if (option == 1) //IVs stored in 6 bytes
             {
-                if (inputFile[offset_Data.GetIV()] <= 31 &&
-                    inputFile[offset_Data.GetIV() + offset_Data.GetSizeIV()] <= 31 &&
-                    inputFile[offset_Data.GetIV() + offset_Data.GetSizeIV() * 2] <= 31 &&
-                    inputFile[offset_Data.GetIV() + offset_Data.GetSizeIV() * 3] <= 31 &&
-                    inputFile[offset_Data.GetIV() + offset_Data.GetSizeIV() * 4] <= 31 &&
-                    inputFile[offset_Data.GetIV() + offset_Data.GetSizeIV() * 5] <= 31)
+                if (inputFile[offset_Data.IV] <= 31 &&
+                    inputFile[offset_Data.IV + offset_Data.SizeIV] <= 31 &&
+                    inputFile[offset_Data.IV + offset_Data.SizeIV * 2] <= 31 &&
+                    inputFile[offset_Data.IV + offset_Data.SizeIV * 3] <= 31 &&
+                    inputFile[offset_Data.IV + offset_Data.SizeIV * 4] <= 31 &&
+                    inputFile[offset_Data.IV + offset_Data.SizeIV * 5] <= 31)
                 {
                     valid = true;
                 }
@@ -144,20 +144,20 @@ namespace PKX_Extraction.Core.DataManager
              
             if (option == 0 || option == 3) //PkRus single byte
             {
-                if (bit.Pokerus(inputFile[offset_Data.GetPkrus()]))
+                if (bit.Pokerus(inputFile[offset_Data.Pkrus]))
                     valid = true;
             }
             else if (option == 1) //PkRus Split in 2 bytes
             {
                 int skip;
-                if (offset_Data.GetPkrus() == 0xCA)
+                if (offset_Data.Pkrus == 0xCA)
                     skip = 3; //Colo
                 else
                     skip = 2; //XD
 
-                byte[] tempArr = { inputFile[offset_Data.GetPkrus()] };
+                byte[] tempArr = { inputFile[offset_Data.Pkrus] };
                 string byte1 = Convert.ToHexString(tempArr);
-                tempArr[0] = inputFile[offset_Data.GetPkrus() + skip];
+                tempArr[0] = inputFile[offset_Data.Pkrus + skip];
                 string byte2 = Convert.ToHexString(tempArr);
                 byte pkrus;
 
@@ -181,12 +181,12 @@ namespace PKX_Extraction.Core.DataManager
 
             if (option != 2)
             {
-                if ((hex.LittleEndian(buffer, offset_Data.GetHPEV(), offset_Data.GetSizeHPEV(), invert) +
-                    hex.LittleEndian(buffer, offset_Data.GetAttEV(), offset_Data.GetSizeAttEV(), invert) +
-                    hex.LittleEndian(buffer, offset_Data.GetDefEV(), offset_Data.GetSizeDefEV(), invert) +
-                    hex.LittleEndian(buffer, offset_Data.GetSpeedEV(), offset_Data.GetSizeSpeedEV(), invert) +
-                    hex.LittleEndian(buffer, offset_Data.GetSpAttEV(), offset_Data.GetSizeSpAttEV(), invert) +
-                    hex.LittleEndian(buffer, offset_Data.GetSpDefEV(), offset_Data.GetSizeSpDefEV(), invert)) <= totalEV)
+                if ((hex.LittleEndian(buffer, offset_Data.HPEV, offset_Data.SizeHPEV, invert) +
+                    hex.LittleEndian(buffer, offset_Data.AttEV, offset_Data.SizeAttEV, invert) +
+                    hex.LittleEndian(buffer, offset_Data.DefEV, offset_Data.SizeDefEV, invert) +
+                    hex.LittleEndian(buffer, offset_Data.SpeedEV, offset_Data.SizeSpeedEV, invert) +
+                    hex.LittleEndian(buffer, offset_Data.SpAttEV, offset_Data.SizeSpAttEV, invert) +
+                    hex.LittleEndian(buffer, offset_Data.SpDefEV, offset_Data.SizeSpDefEV, invert)) <= totalEV)
                 {
                     valid = true;
                 }

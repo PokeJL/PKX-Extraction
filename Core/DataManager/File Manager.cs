@@ -32,7 +32,7 @@ namespace PKX_Extraction.Core.DataManager
             byte[] inputFile;
 
             inputFile = OpenFile(path);
-            obj.SetFileData(inputFile);
+            obj.FileData = inputFile;
 
             MP(inputFile.Length);
         }

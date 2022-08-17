@@ -37,17 +37,17 @@ namespace PKX_Extraction.Core.Generation
             Array_Manager arr = new Array_Manager();
             Gen_2_Beta_Data beta = new Gen_2_Beta_Data();
 
-            if (input.Length == gv.GetSize() && //Input file is a length of 48 bytes
+            if (input.Length == gv.PartyDataSize && //Input file is a length of 48 bytes
                 con.ConOneHex(input[3]) != 0 && //The Species is valid
                 con.ConOneHex(input[3]) <= 251) //The Species does not go out of range
             {
-                val.SetDexNum(con.ConOneHex(input[0]));
-                val.SetFound(1);
+                val.DexNum = con.ConOneHex(input[0]);
+                val.Found = 1;
                 pokemon[0][0] = 0x01; //Restore Pokemon header
                 pokemon[0][1] = 0x00; //Restore Pokemon header
                 pokemon[0][2] = 0xFF; //Restore Pokemon header
-                arr.AddPart1Dto2D(pokemon, 0, 3, input, 0, gv.GetSize());
-                pokemon[0][3] = dex.getNewG2SW97PokeIndex(val.GetDexNum()); //Updates species index
+                arr.AddPart1Dto2D(pokemon, 0, 3, input, 0, gv.PartyDataSize);
+                pokemon[0][3] = dex.getNewG2SW97PokeIndex(val.DexNum); //Updates species index
                 pokemon[0][4] = 0x00; //Sets the item to None
 
                 if (con.LittleEndian(input, 9, 2, true) == 0) //Checks to see if ID is 00000
@@ -58,7 +58,7 @@ namespace PKX_Extraction.Core.Generation
                 for (int i = 51; i < 57; i++, count++) //Adds the OT
                     pokemon[0][i] = name[count];
 
-                beta.GetPokeName(val.GetDexNum(), name); //Gets species name based on original species index
+                beta.GetPokeName(val.DexNum, name); //Gets species name based on original species index
 
                 count = 0;
 

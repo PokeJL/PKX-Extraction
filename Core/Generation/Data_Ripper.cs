@@ -17,6 +17,7 @@ namespace PKX_Extraction.Core.Generation
         Exceptions exceptions;
         PokeCrypto_Start start;
         Validation check;
+        Pokemon_Value_Check checkP;
 
         public delegate void CurrentProgressMethodInvoker(int amount);
         public delegate bool EndThread();
@@ -32,15 +33,16 @@ namespace PKX_Extraction.Core.Generation
             exceptions = new();
             start = new();
             check = new();
+            checkP = new();
         }
 
         public void SearchPokemon(List<List<byte>> pokemon, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
         {
-            byte[] buffer = new byte[gv.GetSize()];
+            byte[] buffer = new byte[gv.PartyDataSize];
             int updateTime;
-            byte[] inputFile = val.GetFileData();
+            byte[] inputFile = val.FileData;
 
-            if (inputFile.Length >= gv.GetSize())
+            if (inputFile.Length >= gv.PartyDataSize)
             {
                 updateTime = UpdateBar(inputFile.Length);
                 for (int i = 0; i < inputFile.Length; i++)
@@ -48,18 +50,18 @@ namespace PKX_Extraction.Core.Generation
                     //Ends the rip process
                     if (End() == true)
                     {
-                        val.SetFound(0);
+                        val.Found = 0;
                         break;
                     }
 
-                    if (i + gv.GetSize() <= inputFile.Length && check.ChecksumStart(inputFile, gv.GetOption(), i, val.GetGen(), val.GetSubGen(), gv.GetInvert()) /*hex.LittleEndian(inputFile, i + offset_Data.GetChecksum(), 2) != 0*/)
+                    if (i + gv.PartyDataSize <= inputFile.Length && check.ChecksumStart(inputFile, gv.Option, i, val.Gen, val.SubGen, gv.Invert) /*hex.LittleEndian(inputFile, i + offset_Data.GetChecksum(), 2) != 0*/)
                     {
-                        for (int n = 0; n < gv.GetSize(); n++)
+                        for (int n = 0; n < gv.PartyDataSize; n++)
                         {
                             buffer[n] = inputFile[i + n];
                         }
 
-                        if (gv.GetIsEncrypted() == true)
+                        if (gv.IsEncrypted == true)
                             Encrypted(pokemon, buffer, i, val, offset_Data, gv);
                         else
                             NonEncrypted(pokemon, buffer, i, val, offset_Data, gv);
@@ -69,9 +71,9 @@ namespace PKX_Extraction.Core.Generation
                 }
             }
             //Ensures that the game that the Pokemon is from is valid for gen 5.
-            if (val.GetFound() != 0 && val.GetGen() == 5)
+            if (val.Found != 0 && val.Gen == 5)
             {
-                exceptions.BWB2W2VsSeeker(ref pokemon, val.GetFound());
+                exceptions.BWB2W2VsSeeker(ref pokemon, val.Found);
             }
         }
 
@@ -79,18 +81,18 @@ namespace PKX_Extraction.Core.Generation
         {
             byte[] convert = new byte[1];
 
-            if (val.GetGen() == 3)
+            if (val.Gen == 3)
                 convert = start.PK3(buffer);
-            else if (val.GetGen() == 4)
+            else if (val.Gen == 4)
                 convert = start.PK4(buffer);
-            else if (val.GetGen() == 5)
+            else if (val.Gen == 5)
                 convert = start.PK5(buffer);
-            else if (val.GetGen() == 6 || val.GetGen() == 7)
+            else if (val.Gen == 6 || val.Gen == 7)
                 convert = start.PK67(buffer);
-            else if (val.GetGen() == 8)
+            else if (val.Gen == 8)
                 convert = start.PK8(buffer);
 
-            if (val.GetGen() == 3)
+            if (val.Gen == 3)
                 exceptions.FRLGTrainerTower(ref convert);
 
             NonEncrypted(pokemon, convert, i, val, offset_Data, gv);
@@ -101,53 +103,22 @@ namespace PKX_Extraction.Core.Generation
             bool update = false;
             int currentDexNum;
 
-            if (val.GetGen() == 1)
-                currentDexNum = dexCon.GetGen1Num(hex.LittleEndian(buffer, offset_Data.GetDex(), offset_Data.GetSizeDex(), gv.GetInvert()));
-            else if (val.GetGen() == 3)
-                currentDexNum = dexCon.Gen3GetDexNum(hex.LittleEndian(buffer, offset_Data.GetDex(), offset_Data.GetSizeDex(), gv.GetInvert()));
+            if (val.Gen == 1)
+                currentDexNum = dexCon.GetGen1Num(hex.LittleEndian(buffer, offset_Data.Dex, offset_Data.SizeDex, gv.Invert));
+            else if (val.Gen == 3)
+                currentDexNum = dexCon.Gen3GetDexNum(hex.LittleEndian(buffer, offset_Data.Dex, offset_Data.SizeDex, gv.Invert));
             else
-                currentDexNum = hex.LittleEndian(buffer, offset_Data.GetDex(), offset_Data.GetSizeDex(), gv.GetInvert());
+                currentDexNum = hex.LittleEndian(buffer, offset_Data.Dex, offset_Data.SizeDex, gv.Invert);          
 
-            //Value_Test testing = new();
-            //testing.Test(buffer, currentDexNum, val, offset_Data, gv);
-
-            if (hex.LittleEndian(buffer, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), gv.GetInvert()) != 0 && //Move 1 has an actual move
-            hex.LittleEndian(buffer, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), gv.GetInvert()) <= gv.GetNumOfMovesInGen() && //Move 1 is a valid move
-            hex.LittleEndian(buffer, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), gv.GetInvert()) <= gv.GetNumOfMovesInGen() && //Move 2 is a valid move
-            hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) <= gv.GetNumOfMovesInGen() && //Move 3 is a valid move
-            hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert()) <= gv.GetNumOfMovesInGen() && //Move 4 is a valid move
-            currentDexNum <= gv.GetNumOfPokeInGen() && //Ensures the species is not outside the valid range
-            hex.LittleEndian(buffer, offset_Data.GetDex(), offset_Data.GetSizeDex(), gv.GetInvert()) != 0 && //Not a glitch Pokemon
-             hex.LittleEndian(buffer, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), gv.GetInvert()) != hex.LittleEndian(buffer, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), gv.GetInvert()) && //Move 1 != Move 2
-            hex.LittleEndian(buffer, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), gv.GetInvert()) != hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) && //Move 1 != Move 3
-            hex.LittleEndian(buffer, offset_Data.GetMove1(), offset_Data.GetSizeMove1(), gv.GetInvert()) != hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert()) && //Move 1 != Move 4
-            ((hex.LittleEndian(buffer, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), gv.GetInvert()) != hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) &&
-            hex.LittleEndian(buffer, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), gv.GetInvert()) != hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert())) == true ||
-            (hex.LittleEndian(buffer, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), gv.GetInvert()) == 0 &&
-            hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) == 0 &&
-            hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert()) == 0) == true) && //2 != 3 and != 4 OR Moves 2 = 0 and 3 = 0 and 4 = 0
-            ((hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) != hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert())) == true ||
-            (hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) == 0 &&
-            hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert()) == 0) == true) && //3 != 4
-            (hex.LittleEndian(buffer, offset_Data.GetMove2(), offset_Data.GetSizeMove2(), gv.GetInvert()) == 0 &&
-            hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) != 0 &&
-            hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert()) != 0) == false && //Make sure move 2 is a move if move 3 and 4 is a move
-            (hex.LittleEndian(buffer, offset_Data.GetMove3(), offset_Data.GetSizeMove3(), gv.GetInvert()) == 0 && hex.LittleEndian(buffer, offset_Data.GetMove4(), offset_Data.GetSizeMove4(), gv.GetInvert()) != 0) == false && //Make sure move 3 is a move if move 4 is a move
-            check.EV(buffer, gv.GetEffortTotal(), gv.GetInvert(), val.GetGen(), val.GetSubGen(), gv.GetOption()) && // EV total does not exceed limit
-            check.Pkrus(buffer, gv.GetOption()) && //Makes sure Pokerus is valid
-            check.IVs(buffer, gv.GetOption()) && //Check valid IVs
-            check.ChecksumEnd(buffer, gv.GetOption(), gv.GetColumn(), gv.GetInvert()) //Makes sure the checksum is correct
-            )
+            if (checkP.IsPokemon(buffer, currentDexNum, val, offset_Data, gv))
             {
-                /*bit.Checksum(buffer, offset_Data.GetChecksum(), offset_Data.GetChecksumCalcDataStart(), val.GetColumn())*/
-                arr.UpdateCheck(pokemon, val.GetFound(), buffer, ref update, val.GetGen(), val.GetSubGen(), gv.GetInvert());
-                if (update == false)
+                arr.UpdateCheck(pokemon, val.Found, buffer, ref update, val.Gen, val.SubGen, gv.Invert);
+                if (!update)
                 {
-                    arr.Array1Dto2D(pokemon, val.GetFound(), gv.GetColumn(), buffer);
-                    val.SetFound(val.GetFound() + 1);
+                    arr.Array1Dto2D(pokemon, val.Found, gv.StorageDataSize, buffer);
+                    val.Found += 1;
                 }
             }
-            //check = new();
         }
 
         private void ProgressUpdate(int progress, int time, byte[] data)
