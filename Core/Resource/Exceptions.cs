@@ -12,6 +12,10 @@ namespace PKX_Extraction.Core.Resource
     {
         public Exceptions() { }
 
+        /// <summary>
+        /// Fixes Trainer Tower shiny Pokemon
+        /// </summary>
+        /// <param name="data">The buffer data be checked</param>
         public void FRLGTrainerTower(ref byte[] data)
         {
             //These Pokemon are encrypted twice; therefore, needs the encryption to be broken a second time
@@ -41,6 +45,11 @@ namespace PKX_Extraction.Core.Resource
             }
         }
 
+        /// <summary>
+        /// Fixes data for gen 5 VS seeker dumps
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="length"></param>
         public void BWB2W2VsSeeker (ref List<List<byte>> data, int length)
         {
             //Vs Seeker Pokemon Seem to have orgin game version wiped and PK5 files don't load without that

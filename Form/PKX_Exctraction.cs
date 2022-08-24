@@ -61,6 +61,11 @@ namespace PKX_Extraction
             list = new List<string>();
         }
 
+        /// <summary>
+        /// Opens the file open dialog box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenFileBTN_Click(object sender, EventArgs e)
         {
             openFileDialog1.FileName = null;
@@ -70,6 +75,9 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Opens the selected file
+        /// </summary>
         private void FileOpen()
         {
             try
@@ -90,10 +98,17 @@ namespace PKX_Extraction
                 extractBTN.Enabled = true;
         }
 
+        /// <summary>
+        /// Starts the liner search for Pokemon data in the file.
+        /// Uses a worker thread since the process takes too long
+        /// to run in the UI thread.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void extractBTN_Click(object sender, EventArgs e)
         {
             pokemon.Clear();
-            if (!backgroundWorker1.IsBusy)
+            if (!backgroundWorker1.IsBusy) //If search hasn't began
             {
                 val.PartReset();
                 backgroundWorker1.WorkerSupportsCancellation = true;
@@ -104,7 +119,7 @@ namespace PKX_Extraction
                 val.EndTask = false;
                 backgroundWorker1.RunWorkerAsync();
             }
-            else
+            else //If the search if forcfully stopped
             {
                 backgroundWorker1.CancelAsync();
                 val.EndTask = true;
@@ -115,11 +130,24 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// This doesn't do anything so why is it here.
+        /// Well I'll tell you why! When I was trying to
+        /// learn to do threads I made this function and
+        /// now I'm too paranoid that the application 
+        /// will stop working if I remove it.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BackgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             RipProgressBar.Value = e.ProgressPercentage;
         }
 
+        /// <summary>
+        /// Save an extracted Pokemon to an external file
+        /// </summary>
+        /// <param name="slot">The index of the Pokemon in the extracted list</param>
         private void SaveDialog(int slot)
         {
             SaveFileDialog saveFileDialog1 = new();
@@ -160,10 +188,10 @@ namespace PKX_Extraction
             saveFileDialog1.Title = "Save Pokemon";
             saveFileDialog1.ShowDialog();
 
-            if (saveFileDialog1.FileName != "")
+            if (saveFileDialog1.FileName != string.Empty)
             {
                 byte[] saveData = new byte[gv.StorageDataSize];
-
+                //Stores the selected Pokemon into a separate array
                 if (val.Gen == 1 || (val.Gen == 2 && val.SubGen != 2))
                 {
                     saveData = fix.Gen12Fix(pokemon, slot, gv.StorageDataSize, val.Gen);
@@ -180,70 +208,49 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Shows the data of the selected extracted Pokemon
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pkmSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             val.SelectIndex = pkmSelect.SelectedIndex;
 
             if (list.Count == 0)
                 list.Add("1");
-
-            if (val.Gen == 2 && val.SubGen == 2)
-            {
-                Gen_2_Beta_Data beta = new();
-                if (val.DexNum >= 152)
-                    list[0] = "d97_" + val.DexNum.ToString();
-                else
-                    list[0] = "b_" + val.DexNum.ToString();
-                pokemonInfoTXB.Text = beta.GetNameString(val.DexNum) + Environment.NewLine;
-                pokemonInfoTXB.Text += "ID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, 9, 2, gv.Invert).ToString() + Environment.NewLine;
-                pokemonInfoTXB.Text += "SID: 00000" + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 1: " + data.getMove(hex.ConOneHex(pokemon[0][5])) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 2: " + data.getMove(hex.ConOneHex(pokemon[0][6])) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 3: " + data.getMove(hex.ConOneHex(pokemon[0][7])) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 4: " + data.getMove(hex.ConOneHex(pokemon[0][8])) + Environment.NewLine;
-            }
-            else
-            {
-                if (val.Gen == 3)
-                    val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert));
-                else if (val.Gen == 1)
-                    val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert));
-                else
-                    val.DexNum = hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert);
-
-                pokemonInfoTXB.Text = data.getPokemonName(val.DexNum) + Environment.NewLine;
-                pokemonInfoTXB.Text += "ID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, offest.ID, offest.SizeID, gv.Invert).ToString() + Environment.NewLine;
-                if (val.Gen == 1 || val.Gen == 2)
-                    pokemonInfoTXB.Text += "SID: 00000" + Environment.NewLine;
-                else
-                    pokemonInfoTXB.Text += "SID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, offest.SID, offest.SizeSID, gv.Invert).ToString() + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 1: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move1, offest.SizeMove1, gv.Invert)) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 2: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move2, offest.SizeMove2, gv.Invert)) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 3: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move3, offest.SizeMove3, gv.Invert)) + Environment.NewLine;
-                pokemonInfoTXB.Text += "Move 4: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move4, offest.SizeMove4, gv.Invert)) + Environment.NewLine;
-
-                list[0] = "b_" + val.DexNum.ToString();
-            }
+            pokemonInfoTXB.Text = mess.PokemonSummary(pokemon, list, val, offest, gv);
             Icon.Image = (Bitmap)Properties.Resources.ResourceManager.GetObject(list[0]);
         }
 
+        /// <summary>
+        /// Saves a selected Pokemon
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveBTN_Click(object sender, EventArgs e)
         {
             SaveDialog(val.SelectIndex);
         }
 
+        /// <summary>
+        /// runs the extractione process in a diffrent thread
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+            //Force stops the search
             if (backgroundWorker1.CancellationPending)
             {
                 e.Cancel = true;
                 return;
             }
-            if (val.FileAdded == true)
+            if (val.FileAdded == true) //Searches for a Pokemon
             {
-
                 if (mainGameRBT.Checked == true)
                 {
+                    //Set values for main line game
                     if (val.ComboSelect == 1)
                     {
                         SetClasses(1, 0);
@@ -277,7 +284,7 @@ namespace PKX_Extraction
                         SetClasses(8, 0);
                     }
                 }
-
+                //Set values for spin off game
                 if (spinOffRBT.Checked == true) //Fix all when stadium is added
                 {
                     if (val.ComboSelect == 1)
@@ -293,7 +300,7 @@ namespace PKX_Extraction
                         SetClasses(3, 2);
                     }
                 }
-
+                //searches spin off game
                 if (spinOffRBT.Checked == true) //Fix when stadium is added
                 {
                     if (val.ComboSelect == 1)
@@ -307,7 +314,7 @@ namespace PKX_Extraction
                         rip.SearchPokemon(pokemon, val, offest, gv);
                     }
                 }
-                else
+                else //Searches main line game
                 {
                     fm.LoadData(string.Format("{0}", openFileDialog1.FileName), val);
                     rip.SearchPokemon(pokemon, val, offest, gv);
@@ -320,9 +327,14 @@ namespace PKX_Extraction
 
             System.Windows.Forms.MessageBox.Show(val.Found.ToString() + " Pokemon found.");
 
-            BindComboBoxData();
+            BindComboBoxData(); //Adds found Pokemon to combo box
         }
 
+        /// <summary>
+        /// Sets the application values and game values
+        /// </summary>
+        /// <param name="gen">The target generation</param>
+        /// <param name="subGen">The target game in a generation</param>
         private void SetClasses(int gen, int subGen)
         {
             val.Gen = gen;
@@ -331,6 +343,9 @@ namespace PKX_Extraction
             offest.SetValues(gen, subGen);
         }
 
+        /// <summary>
+        /// Binds the names of found Pokemon to the combo box
+        /// </summary>
         private void BindComboBoxData()
         {
             if (pkmSelect.InvokeRequired)
@@ -366,6 +381,10 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Inisializes the progress bar
+        /// </summary>
+        /// <param name="amount">Numerical digit size of the bar</param>
         private void SetAmount(int amount)
         {
             if (RipProgressBar.InvokeRequired)
@@ -379,6 +398,10 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Updates the progress bar with how far the search has gone
+        /// </summary>
+        /// <param name="amount">The amount of preogress done</param>
         private void UpdateProgress(int amount)
         {
             if (RipProgressBar.InvokeRequired)
@@ -391,11 +414,21 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Sets the application value to force stop the search
+        /// </summary>
+        /// <returns></returns>
         public bool Stopper()
         {
             return val.EndTask;
         }
 
+        /// <summary>
+        /// Sets the games select combo box with games if the 
+        /// main line radio button is selected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mainGameRBT_CheckedChanged(object sender, EventArgs e)
         {
             selectGameCB.Items.Clear();
@@ -417,6 +450,12 @@ namespace PKX_Extraction
             selectGameCB.Enabled = true;
         }
 
+        /// <summary>
+        /// Sets the games select combo box with games if the 
+        /// spin off radio button is selected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void spinOffRBT_CheckedChanged(object sender, EventArgs e)
         {
             selectGameCB.Items.Clear();
@@ -435,6 +474,11 @@ namespace PKX_Extraction
             selectGameCB.Enabled = true;
         }
 
+        /// <summary>
+        /// Modifies the UI based on what is selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void selectGameCB_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(selectGameCB.SelectedIndex == 0)
@@ -458,6 +502,11 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Allows the user to drag and drop a RAM dump
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PKX_ExtractionDragDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Any() && OpenFileBTN.Enabled == true)
@@ -467,6 +516,11 @@ namespace PKX_Extraction
             }
         }
 
+        /// <summary>
+        /// Allows the user to drag and drop a RAM dump
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PKX_ExtractionDragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PKX_Extraction.Core.DataManager;
 
 namespace PKX_Extraction.Core.Resource
 {
@@ -10,6 +11,11 @@ namespace PKX_Extraction.Core.Resource
     {
         public Messages() { }
 
+        /// <summary>
+        /// returns a messages for the selected main line target game
+        /// </summary>
+        /// <param name="gen"></param>
+        /// <returns></returns>
         public string MainLine(int gen)
         {
             string message;
@@ -59,6 +65,11 @@ namespace PKX_Extraction.Core.Resource
             return message;
         }
 
+        /// <summary>
+        /// returns a messages for the selected spin off target game
+        /// </summary>
+        /// <param name="sel"></param>
+        /// <returns></returns>
         public string SpinOff(int sel)
         {
             string message;
@@ -95,6 +106,64 @@ namespace PKX_Extraction.Core.Resource
             else
             {
                 message = string.Format("Error");
+            }
+
+            return message;
+        }
+
+        /// <summary>
+        /// Returns a basic summary of the selected extracted Pokemon
+        /// </summary>
+        /// <param name="pokemon">The list of list of Pokemon</param>
+        /// <param name="list">Needed to get the correct image</param>
+        /// <param name="val">Applcation valuse</param>
+        /// <param name="offest">Offsets of the target game</param>
+        /// <param name="gv">Game values for the target game</param>
+        /// <returns></returns>
+        public string PokemonSummary(List<List<byte>>pokemon, List<string> list, 
+            Applicaton_Values val, Offest_data offest, Game_Values gv)
+        {
+            Data_Conversion hex = new();
+            Pokemon_Data data = new();
+            Dex_Conversion dex = new();
+            string message = string.Empty;
+
+            if (val.Gen == 2 && val.SubGen == 2)
+            {
+                Gen_2_Beta_Data beta = new();
+                if (val.DexNum >= 152)
+                    list[0] = "d97_" + val.DexNum.ToString();
+                else
+                    list[0] = "b_" + val.DexNum.ToString();
+                message = beta.GetNameString(val.DexNum) + Environment.NewLine;
+                message += "ID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, 9, 2, gv.Invert).ToString() + Environment.NewLine;
+                message += "SID: 00000" + Environment.NewLine;
+                message += "Move 1: " + data.getMove(hex.ConOneHex(pokemon[0][5])) + Environment.NewLine;
+                message += "Move 2: " + data.getMove(hex.ConOneHex(pokemon[0][6])) + Environment.NewLine;
+                message += "Move 3: " + data.getMove(hex.ConOneHex(pokemon[0][7])) + Environment.NewLine;
+                message += "Move 4: " + data.getMove(hex.ConOneHex(pokemon[0][8])) + Environment.NewLine;
+            }
+            else
+            {
+                if (val.Gen == 3)
+                    val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert));
+                else if (val.Gen == 1)
+                    val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert));
+                else
+                    val.DexNum = hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Dex, offest.SizeDex, gv.Invert);
+
+                message = data.getPokemonName(val.DexNum) + Environment.NewLine;
+                message += "ID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, offest.ID, offest.SizeID, gv.Invert).ToString() + Environment.NewLine;
+                if (val.Gen == 1 || val.Gen == 2)
+                    message += "SID: 00000" + Environment.NewLine;
+                else
+                    message += "SID: " + hex.LittleEndian2D(pokemon, val.SelectIndex, offest.SID, offest.SizeSID, gv.Invert).ToString() + Environment.NewLine;
+                message += "Move 1: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move1, offest.SizeMove1, gv.Invert)) + Environment.NewLine;
+                message += "Move 2: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move2, offest.SizeMove2, gv.Invert)) + Environment.NewLine;
+                message += "Move 3: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move3, offest.SizeMove3, gv.Invert)) + Environment.NewLine;
+                message += "Move 4: " + data.getMove(hex.LittleEndian2D(pokemon, val.SelectIndex, offest.Move4, offest.SizeMove4, gv.Invert)) + Environment.NewLine;
+
+                list[0] = "b_" + val.DexNum.ToString();
             }
 
             return message;

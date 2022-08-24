@@ -8,6 +8,9 @@ namespace PKX_Extraction.Core.Resource
 {
     class Dex_Conversion
     {
+        /// <summary>
+        /// Dex order for gen 1
+        /// </summary>
         private byte[] gen1 = 
         { 
             0x00, 0x99, 0x09, 0x9A, 0xB0, 0xB2, 0xB4, 0xB1, 0xB3, 0x1C, 0x7B, 0x7C, 0x7D, 0x70, 0x71, 0x72, 
@@ -28,6 +31,9 @@ namespace PKX_Extraction.Core.Resource
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 
         };
 
+        /// <summary>
+        /// Dex order for gen 3
+        /// </summary>
         private int[] gen3NatNums = 
         {
             000, 001, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 013, 014, 015, 016, 017, 018, 019,
@@ -52,6 +58,9 @@ namespace PKX_Extraction.Core.Resource
             407, 408, 404, 405, 406, 409, 410
         };
 
+        /// <summary>
+        /// Dex order to Space World demo
+        /// </summary>
         private byte[] gen2SW97Converstion =
         {
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 
@@ -74,6 +83,11 @@ namespace PKX_Extraction.Core.Resource
 
         public Dex_Conversion() { }
 
+        /// <summary>
+        /// Returns the correct dex number for gen 1
+        /// </summary>
+        /// <param name="dex">The dex number from extraction</param>
+        /// <returns></returns>
         public int GetGen1Num(int dex)
         {
             int value = dex;
@@ -91,6 +105,11 @@ namespace PKX_Extraction.Core.Resource
             return value;
         }
 
+        /// <summary>
+        /// Returns the correct dex number for gen 3
+        /// </summary>
+        /// <param name="dex">The dex number from extraction</param>
+        /// <returns></returns>
         public int Gen3GetDexNum(int dex)
         {
             int value = dex;
@@ -111,6 +130,11 @@ namespace PKX_Extraction.Core.Resource
             return value;
         }
 
+        /// <summary>
+        /// Returns the correct dex number for Space World demo
+        /// </summary>
+        /// <param name="index">Dex num from extraction</param>
+        /// <returns></returns>
         public byte getNewG2SW97PokeIndex(int index)
         {
             return gen2SW97Converstion[index];

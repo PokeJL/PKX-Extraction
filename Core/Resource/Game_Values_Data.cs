@@ -14,6 +14,19 @@ namespace PKX_Extraction.Core.Resource
 
         }
 
+        /// <summary>
+        /// Spacific values for the target game.
+        /// </summary>
+        /// <param name="storageDataSize"></param>
+        /// <param name="partyDataSize"></param>
+        /// <param name="effortTotal"></param>
+        /// <param name="isEncrypted"></param>
+        /// <param name="invert"></param>
+        /// <param name="option"></param>
+        /// <param name="numOfPokeInGen"></param>
+        /// <param name="numOfMovesInGen"></param>
+        /// <param name="gen"></param>
+        /// <param name="subGen"></param>
         public void GameData(ref int storageDataSize, ref int partyDataSize, ref int effortTotal, ref bool isEncrypted,
                             ref bool invert, ref int option, ref int numOfPokeInGen, ref int numOfMovesInGen, int gen,
                             int subGen)
