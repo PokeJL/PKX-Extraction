@@ -219,7 +219,7 @@ namespace PKX_Extraction
 
             if (list.Count == 0)
                 list.Add("1");
-            pokemonInfoTXB.Text = mess.PokemonSummary(pokemon, list, val, offest, gv);
+            pokemonInfoTXB.Text = Messages.PokemonSummary(pokemon, list, val, offest, gv);
             Icon.Image = (Bitmap)Properties.Resources.ResourceManager.GetObject(list[0]);
         }
 
@@ -496,9 +496,9 @@ namespace PKX_Extraction
                 OpenFileTXB.Enabled = true;
 
                 if (mainGameRBT.Checked == true)
-                    Info.Text = mess.MainLine(val.ComboSelect);
+                    Info.Text = Messages.MainLine(val.ComboSelect);
                 else
-                    Info.Text = mess.SpinOff(val.ComboSelect);
+                    Info.Text = Messages.SpinOff(val.ComboSelect);
             }
         }
 

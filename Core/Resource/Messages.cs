@@ -16,7 +16,7 @@ namespace PKX_Extraction.Core.Resource
         /// </summary>
         /// <param name="gen"></param>
         /// <returns></returns>
-        public string MainLine(int gen)
+        public static string MainLine(int gen)
         {
             string message;
 
@@ -70,7 +70,7 @@ namespace PKX_Extraction.Core.Resource
         /// </summary>
         /// <param name="sel"></param>
         /// <returns></returns>
-        public string SpinOff(int sel)
+        public static string SpinOff(int sel)
         {
             string message;
 
@@ -120,7 +120,7 @@ namespace PKX_Extraction.Core.Resource
         /// <param name="offest">Offsets of the target game</param>
         /// <param name="gv">Game values for the target game</param>
         /// <returns></returns>
-        public string PokemonSummary(List<List<byte>>pokemon, List<string> list, 
+        public static string PokemonSummary(List<List<byte>>pokemon, List<string> list, 
             Applicaton_Values val, Offest_data offest, Game_Values gv)
         {
             Data_Conversion hex = new();

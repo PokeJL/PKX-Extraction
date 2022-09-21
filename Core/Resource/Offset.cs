@@ -11,6 +11,74 @@ namespace PKX_Extraction.Core.Resource
     {
         public Offset() { }
 
+        /// <summary>
+        /// Returns the data stucture for a Pokemon in a given gen
+        /// </summary>
+        /// <param name="pid"></param>
+        /// <param name="dex"></param>
+        /// <param name="item"></param>
+        /// <param name="id"></param>
+        /// <param name="sid"></param>
+        /// <param name="exp"></param>
+        /// <param name="friendship"></param>
+        /// <param name="ability"></param>
+        /// <param name="hpEV"></param>
+        /// <param name="attEV"></param>
+        /// <param name="defEV"></param>
+        /// <param name="speedEV"></param>
+        /// <param name="spAttEV"></param>
+        /// <param name="spDefEV"></param>
+        /// <param name="cool"></param>
+        /// <param name="beauty"></param>
+        /// <param name="cute"></param>
+        /// <param name="smart"></param>
+        /// <param name="tough"></param>
+        /// <param name="sheen"></param>
+        /// <param name="move1"></param>
+        /// <param name="move2"></param>
+        /// <param name="move3"></param>
+        /// <param name="move4"></param>
+        /// <param name="iv"></param>
+        /// <param name="nature"></param>
+        /// <param name="sizePID"></param>
+        /// <param name="sizeDex"></param>
+        /// <param name="sizeItem"></param>
+        /// <param name="sizeID"></param>
+        /// <param name="sizeSID"></param>
+        /// <param name="sizeEXP"></param>
+        /// <param name="sizeFriendship"></param>
+        /// <param name="sizeAbility"></param>
+        /// <param name="sizeHPEV"></param>
+        /// <param name="sizeAttEV"></param>
+        /// <param name="sizeDefEV"></param>
+        /// <param name="sizeSpeedEV"></param>
+        /// <param name="sizeSpAttEV"></param>
+        /// <param name="sizeSpDefEV"></param>
+        /// <param name="sizeCool"></param>
+        /// <param name="sizeBeauty"></param>
+        /// <param name="sizeCute"></param>
+        /// <param name="sizeSmart"></param>
+        /// <param name="sizeTough"></param>
+        /// <param name="sizeSheen"></param>
+        /// <param name="sizeMove1"></param>
+        /// <param name="sizeMove2"></param>
+        /// <param name="sizeMove3"></param>
+        /// <param name="sizeMove4"></param>
+        /// <param name="sizeIV"></param>
+        /// <param name="sizeNature"></param>
+        /// <param name="encryption"></param>
+        /// <param name="sizeEncryption"></param>
+        /// <param name="pkrus"></param>
+        /// <param name="checksum"></param>
+        /// <param name="checksumCalcDataStart"></param>
+        /// <param name="version"></param>
+        /// <param name="nickname"></param>
+        /// <param name="sizeNickname"></param>
+        /// <param name="otName"></param>
+        /// <param name="sizeOTName"></param>
+        /// <param name="language"></param>
+        /// <param name="gen"></param>
+        /// <param name="subGen"></param>
         public void Offsets3Later(ref int pid, ref int dex, ref int item, ref int id, ref int sid, ref int exp, ref int friendship,
                                 ref int ability, ref int hpEV, ref int attEV, ref int defEV, ref int speedEV, ref int spAttEV, ref int spDefEV,
                                 ref int cool, ref int beauty, ref int cute, ref int smart, ref int tough, ref int sheen, ref int move1, ref int move2,
@@ -22,6 +90,7 @@ namespace PKX_Extraction.Core.Resource
                                 ref int sizeIV, ref int sizeNature, ref int encryption, ref int sizeEncryption, ref int pkrus, ref int checksum, ref int checksumCalcDataStart, ref int version, 
                                 ref int nickname, ref int sizeNickname, ref int otName, ref int sizeOTName, ref int language, int gen, int subGen)
         {
+            //RBY
             if (gen == 1 && subGen == 0)
             {
                 pid = 0; //Does not exist
@@ -89,6 +158,7 @@ namespace PKX_Extraction.Core.Resource
                 language = 0; //Does not exist
             }
 
+            //GSC
             if (gen == 2 && subGen == 0)
             {
                 pid = 0; //Does not exist
@@ -156,6 +226,7 @@ namespace PKX_Extraction.Core.Resource
                 language = 0; //Not apart of Pokemon structure
             }
 
+            //RSEFRLG
             if (gen == 3 && subGen == 0)
             {
                 pid = 0;
@@ -223,7 +294,8 @@ namespace PKX_Extraction.Core.Resource
                 language = 0x12;
             }
 
-            if (gen == 3 && subGen == 1) //Colo
+            //Colo
+            if (gen == 3 && subGen == 1)
             {
                 pid = 0x04;
                 sizePID = 4;
@@ -290,7 +362,8 @@ namespace PKX_Extraction.Core.Resource
                 language = 0x0B;
             }
 
-            if (gen == 3 && subGen == 2) //XD
+            //XD
+            if (gen == 3 && subGen == 2)
             {
                 pid = 0x28;
                 sizePID = 4;
@@ -357,6 +430,7 @@ namespace PKX_Extraction.Core.Resource
                 language = 0x37;
             }
 
+            //DPPtHGSSBWB2W2
             if (gen == 4 || gen == 5 && subGen == 0)
             {
                 pid = 0;
@@ -433,6 +507,7 @@ namespace PKX_Extraction.Core.Resource
                 sizeEncryption = 1;
             }
             
+            //XYSMUSUM
             if (gen == 6 || gen == 7 && subGen == 0)
             {
                 pid = 24;
@@ -500,6 +575,7 @@ namespace PKX_Extraction.Core.Resource
                 language = 0xE3;
             }
 
+            //SWSH
             if (gen == 8 && subGen == 0)
             {
                 pid = 0x1C;
