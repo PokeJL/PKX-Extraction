@@ -7,14 +7,21 @@ using PKX_Extraction.Core.DataManager;
 
 namespace PKX_Extraction.Core.DataManager
 {
+    /// <summary>
+    /// This class breaks down the original hard to read if
+    /// statments and breaks them down into easy to read
+    /// statments that can be modified easier.
+    /// </summary>
     class Pokemon_Value_Check
     {
         Data_Conversion hex;
-        Validation check;
+        //Validation check;
+        Validation_Data_Check vdc;
         public Pokemon_Value_Check()
         {
             hex = new();
-            check = new();
+            //check = new();
+            vdc = new();
         }
 
         /// <summary>
@@ -66,7 +73,11 @@ namespace PKX_Extraction.Core.DataManager
             if (!((hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) !=
                 hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert)) ||
                 (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0))) 
+                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0)))
+                return false;
+            //2 == 0 AND 3 == 0
+            if (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
+                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) != 0)
                 return false;
             //2 != 4 OR 2 AND 4 == 0
             if (!((hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) !=
@@ -74,24 +85,32 @@ namespace PKX_Extraction.Core.DataManager
                 (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
                 hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) == 0))) 
                 return false;
+            //2 == 0 AND 4 == 0
+            if (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
+                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) != 0)
+                return false;
             //3 != 4 OR 3 AND 4 == 0
             if (!((hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) !=
                 hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert)) ||
                 (hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0 &&
                 hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) == 0))) 
                 return false;
+            //3 == 0 AND 4 == 0
+            if (hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0 &&
+                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) != 0)
+                return false;
             // EV total does not exceed limit
-            if (!check.EV(buffer, gv.EffortTotal, gv.Invert, val.Gen, val.SubGen, gv.Option)) 
+            if (!vdc.EV(buffer, gv.EffortTotal, gv.Invert, val.Gen, val.SubGen, gv.Option)) 
                 return false;
             //Makes sure Pokerus is valid
-            if (!check.Pkrus(buffer, gv.Option)) 
+            if (!vdc.Pkrus(buffer, gv.Option)) 
                 return false;
             //Check valid IVs
-            if (!check.IVs(buffer, gv.Option)) 
+            if (!vdc.IVs(buffer, gv.Option)) 
                 return false;
             //Makes sure the checksum is valid or if the game does not have checksum additional
             //checks are completed
-            if (!check.ChecksumEnd(buffer, gv.Option, gv.StorageDataSize, gv.Invert))
+            if (!vdc.ChecksumEnd(buffer, gv.Option, gv.StorageDataSize, gv.Invert))
                 return false;
 
             return true;
@@ -215,6 +234,123 @@ namespace PKX_Extraction.Core.DataManager
             //Check if EXP of found Pokemon matches one already found
             if (!(hex.LittleEndian2D(pokemon, f, offset_Data.EXP, offset_Data.SizeEXP, inversion) == 
                 hex.LittleEndian(convert, offset_Data.EXP, offset_Data.SizeEXP, inversion)))
+                return false;
+
+            return true;
+        }
+
+        public bool ColoXDChecksum(byte[] inputFile, int i, Offest_data offset_Data)
+        {
+            if (!vdc.CheckPokemonNameCompare(inputFile, i + offset_Data.Nickname, offset_Data.NicknameSize))
+                return false;
+
+            if (!vdc.CheckOTNameCompare(inputFile, i + offset_Data.OTName, offset_Data.OTNameSize))
+                return false;
+
+            if(!(inputFile[i + offset_Data.Language] != 0))
+                return false;
+
+            if (!(inputFile[i + offset_Data.Language] < 7))
+                return false;
+
+            if (!((inputFile[i + offset_Data.Version] == 9 || 
+                inputFile[i + offset_Data.Version] == 8 || 
+                inputFile[i + offset_Data.Version] == 10 || 
+                inputFile[i + offset_Data.Version] == 1 || 
+                inputFile[i + offset_Data.Version] == 2 && 
+                inputFile[i + 16] < 2) || 
+                (inputFile[i + offset_Data.Version] == 11 && 
+                inputFile[i + 16] == 0))) //78 = 0x4E & 56 = 0x38
+                return false;
+
+            return true;
+        }
+
+        public bool RBYChecksum(byte[] inputFile, int i, Offest_data offset_Data)
+        {
+            //if (!(inputFile[i + 3] > 1 && inputFile[i + 3] <= 100)) //Level between 2 and 100
+            //    return false;
+
+            if (!(inputFile[i + 4] == 0 ||
+                inputFile[i + 4] == 0x04 ||
+                inputFile[i + 4] == 0x08 ||
+                inputFile[i + 4] == 0x10 ||
+                inputFile[i + 4] == 0x20 ||
+                inputFile[i + 4] == 0x40)) //Valid status condition
+                return false;
+
+            if (!(inputFile[i + 5] == 0x00 ||
+                inputFile[i + 5] == 0x01 ||
+                inputFile[i + 5] == 0x02 ||
+                inputFile[i + 5] == 0x03 ||
+                inputFile[i + 5] == 0x04 ||
+                inputFile[i + 5] == 0x05 ||
+                inputFile[i + 5] == 0x07 ||
+                inputFile[i + 5] == 0x08 ||
+                inputFile[i + 5] == 0x14 ||
+                inputFile[i + 5] == 0x15 ||
+                inputFile[i + 5] == 0x16 ||
+                inputFile[i + 5] == 0x17 ||
+                inputFile[i + 5] == 0x18 ||
+                inputFile[i + 5] == 0x19 ||
+                inputFile[i + 5] == 0x1A)) //valid type 1
+                return false;
+
+            if (!(inputFile[i + 6] == 0x00 ||
+                inputFile[i + 6] == 0x01 ||
+                inputFile[i + 6] == 0x02 ||
+                inputFile[i + 6] == 0x03 ||
+                inputFile[i + 6] == 0x04 ||
+                inputFile[i + 6] == 0x05 ||
+                inputFile[i + 6] == 0x07 ||
+                inputFile[i + 6] == 0x08 ||
+                inputFile[i + 6] == 0x14 ||
+                inputFile[i + 6] == 0x15 ||
+                inputFile[i + 6] == 0x16 ||
+                inputFile[i + 6] == 0x17 ||
+                inputFile[i + 6] == 0x18 ||
+                inputFile[i + 6] == 0x19 ||
+                inputFile[i + 6] == 0x1A))
+                return false;
+
+            if (!(hex.LittleEndian(inputFile, i + offset_Data.EXP, offset_Data.SizeEXP, false) <= 1250000))
+                return false;
+
+            //if (!(hex.LittleEndian(inputFile, i + 1, 2, false) <= hex.LittleEndian(inputFile, i + 0x22, 2, false))) //Make sure current HP is less or equal to max HP
+            //    return false;
+
+            //if (!(hex.LittleEndian(inputFile, i + 0x22, 2, false) != 0)) //Make sure max HP does not equal 0
+            //    return false;
+
+            if (!(hex.LittleEndian(inputFile, i + 0x22, 2, false) <= 710))
+                return false;
+
+            return true;
+        }
+
+        public bool GSCChecksum(byte[] inputFile, int i, Offest_data offset_Data)
+        {
+            if (!(inputFile[i + 0x1F] > 1 && inputFile[i + 0x1F] <= 100)) //Level between 2 and 100
+                return false;
+
+            if (!(inputFile[i + 0x20] == 0 ||
+                inputFile[i + 0x20] == 0x04 ||
+                inputFile[i + 0x20] == 0x08 ||
+                inputFile[i + 0x20] == 0x10 ||
+                inputFile[i + 0x20] == 0x20 ||
+                inputFile[i + 0x20] == 0x40)) //Valid status condition
+                return false;
+
+            if (!(hex.LittleEndian(inputFile, i + offset_Data.EXP, offset_Data.SizeEXP, false) <= 1250000))
+                return false;
+
+            if (!(hex.LittleEndian(inputFile, i + 0x22, 2, false) <= hex.LittleEndian(inputFile, i + 0x24, 2, false))) //Make sure current HP is less or equal to max HP
+                return false;
+
+            //if ((hex.LittleEndian(inputFile, i + 0x24, 2, false) != 0)) //Make sure make HP does not equal 0
+            //    return false;
+
+            if (!(hex.LittleEndian(inputFile, i + 0x24, 2, false) <= 713))
                 return false;
 
             return true;

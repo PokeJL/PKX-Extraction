@@ -45,6 +45,7 @@ namespace PKX_Extraction
             this.mainGameRBT = new System.Windows.Forms.RadioButton();
             this.spinOffRBT = new System.Windows.Forms.RadioButton();
             this.selectGameGB = new System.Windows.Forms.GroupBox();
+            this.AppInfoLinkLBL = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.Icon)).BeginInit();
             this.selectGameGB.SuspendLayout();
             this.SuspendLayout();
@@ -188,12 +189,25 @@ namespace PKX_Extraction
             this.selectGameGB.TabStop = false;
             this.selectGameGB.Text = "Select Game Type:";
             // 
+            // AppInfoLinkLBL
+            // 
+            this.AppInfoLinkLBL.AutoSize = true;
+            this.AppInfoLinkLBL.Font = new System.Drawing.Font("Segoe UI", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.AppInfoLinkLBL.Location = new System.Drawing.Point(291, 312);
+            this.AppInfoLinkLBL.Name = "AppInfoLinkLBL";
+            this.AppInfoLinkLBL.Size = new System.Drawing.Size(93, 11);
+            this.AppInfoLinkLBL.TabIndex = 15;
+            this.AppInfoLinkLBL.TabStop = true;
+            this.AppInfoLinkLBL.Text = "Application Information";
+            this.AppInfoLinkLBL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.AppInfoLinkLBL_LinkClicked);
+            // 
             // PKX_Exctraction
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(394, 322);
+            this.Controls.Add(this.AppInfoLinkLBL);
             this.Controls.Add(this.selectGameGB);
             this.Controls.Add(this.Info);
             this.Controls.Add(this.pokemonInfoTXB);
@@ -236,6 +250,7 @@ namespace PKX_Extraction
         private System.Windows.Forms.RadioButton mainGameRBT;
         private System.Windows.Forms.RadioButton spinOffRBT;
         private System.Windows.Forms.GroupBox selectGameGB;
+        private System.Windows.Forms.LinkLabel AppInfoLinkLBL;
     }
 }
 

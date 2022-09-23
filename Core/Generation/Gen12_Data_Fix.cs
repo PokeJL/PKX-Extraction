@@ -36,14 +36,11 @@ namespace PKX_Extraction.Core.Generation
             data[2] = 0xFF;
             //Add Pokemon data
             for(int i = 0; i < length; i++)
-            {
                 data[i + 3] = pokemon[slot][i];
-            }
+
             //Add padding at the end
             for(int i = length + 3; i < data.Length; i++)
-            {
                 data[i] = 0x00;
-            }
 
             return data;
         }

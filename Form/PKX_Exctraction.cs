@@ -365,7 +365,7 @@ namespace PKX_Extraction
                             val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
                         else if (val.Gen == 1)
                             val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
-                        else if (val.Gen > 2)
+                        else if (val.Gen > 1)
                             val.DexNum = hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert);
 
                         ItemObject[i] = data.getPokemonName(val.DexNum);
@@ -527,6 +527,17 @@ namespace PKX_Extraction
                 e.Effect = DragDropEffects.Link;
             else
                 e.Effect = DragDropEffects.None;
+        }
+
+        /// <summary>
+        /// Displays the application credits
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AppInfoLinkLBL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using Core.Application_Information ai = new();
+            ai.ShowDialog();
         }
     }
 }
