@@ -52,12 +52,7 @@ namespace PKX_Extraction.Core.DataManager
             }
             else if (option == 1) //Fake checksum check for Colo and XD
             {
-                if (/*CheckPokemonNameCompare(inputFile, i + offset_Data.Nickname, offset_Data.NicknameSize) &&
-                    CheckOTNameCompare(inputFile, i + offset_Data.OTName, offset_Data.OTNameSize) &&
-                    inputFile[i + offset_Data.Language] != 0 &&
-                    inputFile[i + offset_Data.Language] < 7 &&
-                    ((inputFile[i + offset_Data.Version] == 9 || inputFile[i + offset_Data.Version] == 8 || inputFile[i + offset_Data.Version] == 10 || inputFile[i + offset_Data.Version] == 1 || inputFile[i + offset_Data.Version] == 2 && inputFile[i + 16] < 2) || (inputFile[i + offset_Data.Version] == 11 && inputFile[i + 16] == 0))*/
-                    pvc.ColoXDChecksum(inputFile, i, offset_Data)) //78 = 0x4E & 56 = 0x38
+                if (pvc.ColoXDChecksum(inputFile, i, offset_Data)) //78 = 0x4E & 56 = 0x38
                     return true;
             }
             else if (option == 2) //Fake checksum check for RBY

@@ -11,13 +11,13 @@ namespace PKX_Extraction.Core.Generation
 {
     class Data_Ripper
     {
-        Data_Conversion hex;
-        Array_Manager arr;
-        Dex_Conversion dexCon;
-        Exceptions exceptions;
-        PokeCrypto_Start start;
-        Validation check;
-        Pokemon_Value_Check checkP;
+        readonly Data_Conversion hex;
+        readonly Array_Manager arr;
+        readonly Dex_Conversion dexCon;
+        readonly Exceptions exceptions;
+        readonly PokeCrypto_Start start;
+        readonly Validation check;
+        readonly Pokemon_Value_Check checkP;
 
         public delegate void CurrentProgressMethodInvoker(int amount);
         public delegate bool EndThread();

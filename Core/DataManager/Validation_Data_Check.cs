@@ -87,9 +87,7 @@ namespace PKX_Extraction.Core.DataManager
                     inputFile[offset_Data.IV + offset_Data.SizeIV * 3] <= 31 &&
                     inputFile[offset_Data.IV + offset_Data.SizeIV * 4] <= 31 &&
                     inputFile[offset_Data.IV + offset_Data.SizeIV * 5] <= 31)
-                {
                     return true;
-                }
             }
             else if (option == 2 || option == 3)
             {
@@ -131,9 +129,7 @@ namespace PKX_Extraction.Core.DataManager
                 return bit.Pokerus(pkrus);
             }
             else if (option == 2)
-            {
                 return true;
-            }
 
             return false;
         }
@@ -151,18 +147,17 @@ namespace PKX_Extraction.Core.DataManager
         public bool EV(byte[] buffer, int totalEV, bool invert, int gen, int subGen, int option)
         {
             offset_Data.SetValues(gen, subGen);
+            //int total = 0;
 
             if (option != 2 || option != 3)
             {
-                if ((hex.LittleEndian(buffer, offset_Data.HPEV, offset_Data.SizeHPEV, invert) +
+                if (hex.LittleEndian(buffer, offset_Data.HPEV, offset_Data.SizeHPEV, invert) +
                     hex.LittleEndian(buffer, offset_Data.AttEV, offset_Data.SizeAttEV, invert) +
                     hex.LittleEndian(buffer, offset_Data.DefEV, offset_Data.SizeDefEV, invert) +
                     hex.LittleEndian(buffer, offset_Data.SpeedEV, offset_Data.SizeSpeedEV, invert) +
                     hex.LittleEndian(buffer, offset_Data.SpAttEV, offset_Data.SizeSpAttEV, invert) +
-                    hex.LittleEndian(buffer, offset_Data.SpDefEV, offset_Data.SizeSpDefEV, invert)) <= totalEV)
-                {
+                    hex.LittleEndian(buffer, offset_Data.SpDefEV, offset_Data.SizeSpDefEV, invert) <= totalEV)
                     return true;
-                }
             }
             else
                 return true; //Not worth checking EVs for gen 1 and 2
@@ -185,40 +180,19 @@ namespace PKX_Extraction.Core.DataManager
         {
             byte[] temp1 = new byte[length];
             byte[] temp2 = new byte[length];
-            byte[] temp1bytes = new byte[2];
-            byte[] temp2bytes = new byte[2];
-            bool temp1Valid = false;
-            bool temp2Valid = false;
-            string temp1String = string.Empty;
-            string temp2String = string.Empty;
+            int total = 0;
 
-            //Stors each name instance into an array
-            arr.ArrayPart(temp1, data, start);
-            arr.ArrayPart(temp2, data, start + 22); //+22 = 0x64
+            for (int i = start; i < start + length; i++)
+                total += Convert.ToInt32(data[i]);
 
-            for (int i = 0; i < length; i += 2)
+            if (total != 0)
             {
-                arr.ArrayPart(temp1bytes, temp1, i);
-                arr.ArrayPart(temp2bytes, temp2, i);
+                //Stores each name instance into an array
+                arr.ArrayPart(temp1, data, start);
+                arr.ArrayPart(temp2, data, start + 22); //+22 = 0x64
 
-                if (Convert.ToInt32(Convert.ToHexString(temp1bytes), 16) < 55296 &&
-                    Convert.ToInt32(Convert.ToHexString(temp2bytes), 16) < 55296) //0xD800 = 55296
-                {
-                    temp1String += char.ConvertFromUtf32(Convert.ToInt32(Convert.ToHexString(temp1bytes), 16));
-                    temp2String += char.ConvertFromUtf32(Convert.ToInt32(Convert.ToHexString(temp2bytes), 16));
-                }
-            }
-
-            temp1String.TrimStart().TrimEnd();
-            temp2String.TrimStart().TrimEnd();
-
-            if (temp1String != string.Empty)
-                temp1Valid = true;
-            if (temp2String != string.Empty)
-                temp2Valid = true;
-
-            if (temp1Valid == true && temp2Valid == true)
                 return arr.ArrayCompare(temp1, temp2);
+            }
 
             return false;
         }
@@ -232,23 +206,12 @@ namespace PKX_Extraction.Core.DataManager
         /// <returns></returns>
         public bool CheckOTNameCompare(byte[] data, int start, int length)
         {
-            byte[] temp1 = new byte[length];
-            byte[] temp1bytes = new byte[2];
-            string temp1String = string.Empty;
+            int total = 0;
 
-            arr.ArrayPart(temp1, data, start);
+            for (int i = start; i < start + length; i++)
+                total += Convert.ToInt32(data[i]);
 
-            for (int i = 0; i < length; i += 2)
-            {
-                arr.ArrayPart(temp1bytes, temp1, i);
-
-                if (Convert.ToInt32(Convert.ToHexString(temp1bytes), 16) < 55296) //0xD800 = 55296 values after that are not valid
-                    temp1String += char.ConvertFromUtf32(Convert.ToInt32(Convert.ToHexString(temp1bytes), 16));
-            }
-
-            temp1String.TrimStart().TrimEnd();
-
-            if (temp1String != string.Empty)
+            if (total != 0)
                 return true;
 
             return false;

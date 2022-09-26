@@ -15,12 +15,10 @@ namespace PKX_Extraction.Core.DataManager
     class Pokemon_Value_Check
     {
         Data_Conversion hex;
-        //Validation check;
         Validation_Data_Check vdc;
         public Pokemon_Value_Check()
         {
             hex = new();
-            //check = new();
             vdc = new();
         }
 
