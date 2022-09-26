@@ -17,9 +17,9 @@ namespace PKX_Extraction.Core.DataManager
 {
     class Validation
     {
-        Data_Conversion hex;
-        Offest_data offset_Data;
-        Pokemon_Value_Check pvc;
+        readonly Data_Conversion hex;
+        readonly Offest_data offset_Data;
+        readonly Pokemon_Value_Check pvc;
 
         public Validation() 
         {

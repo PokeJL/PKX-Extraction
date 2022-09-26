@@ -96,7 +96,8 @@ namespace PKX_Extraction.Core.Resource
             else if (sel == 3)
             {
                 //XD
-                message = string.Format("The rip process will take some time.");
+                message = string.Format("-Some non existent Pokemon may be found.{0}" + 
+                    "-Shadow Pokemon encountered, but not caught will appear in the list.", Environment.NewLine);
             }
             //else if (sel == 4)
             //{

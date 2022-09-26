@@ -80,7 +80,7 @@ namespace PKX_Extraction.Core.Generation
                 pokemon[0].Add(0x00); //Restore Pokemon header
                 pokemon[0].Add(0xFF); //Restore Pokemon header
                 arr.AddPart1Dto2D(pokemon, 0, input, 0, input.Length);
-                pokemon[0][3] = dex.getNewG2SW97PokeIndex(val.DexNum); //Updates species index
+                pokemon[0][3] = dex.GetNewG2SW97PokeIndex(val.DexNum); //Updates species index
                 pokemon[0][4] = 0x00; //Sets the item to None
 
                 if (con.LittleEndian(input, 9, 2, true) == 0) //Checks to see if ID is 00000

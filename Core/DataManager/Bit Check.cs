@@ -14,9 +14,9 @@ namespace PKX_Extraction.Core.DataManager
         /// </summary>
         /// <param name="bit">Bit being checked</param>
         /// <returns></returns>
-        public bool Pokerus(byte bit)
+        public static bool Pokerus(byte bit)
         {
-            Data_Conversion con = new Data_Conversion();
+            Data_Conversion con = new();
             string firstHalf;
             string lastHalf;
             int strain;
@@ -74,7 +74,7 @@ namespace PKX_Extraction.Core.DataManager
         /// <returns></returns>
         public bool Orgins(byte[] data)
         {
-            Data_Conversion con = new Data_Conversion();
+            Data_Conversion con = new();
             string word;
             int metLV;
             int gender;

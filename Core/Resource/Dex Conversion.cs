@@ -91,14 +91,13 @@ namespace PKX_Extraction.Core.Resource
         public int GetGen1Num(int dex)
         {
             int value = dex;
-            bool found = false;
 
-            for(int i = 0; i < gen1.Length && found == false; i++)
+            for(int i = 0; i < gen1.Length; i++)
             {
                 if (gen1[i] == dex)
                 {
                     value = i;
-                    found = true;
+                    break;
                 }
             }
 
@@ -113,15 +112,14 @@ namespace PKX_Extraction.Core.Resource
         public int Gen3GetDexNum(int dex)
         {
             int value = dex;
-            bool found = false;
             if (value > 251)
             {
-                for(int i = 252; i < 387 && found == false; i++)
+                for(int i = 252; i < 387; i++)
                 {
                     if (gen3NatNums[i] == value)
                     {
                         value = i;
-                        found = true;
+                        break;
                     }
                     else if (i + 1 == 387)
                         value = 387;
@@ -135,7 +133,7 @@ namespace PKX_Extraction.Core.Resource
         /// </summary>
         /// <param name="index">Dex num from extraction</param>
         /// <returns></returns>
-        public byte getNewG2SW97PokeIndex(int index)
+        public byte GetNewG2SW97PokeIndex(int index)
         {
             return gen2SW97Converstion[index];
         }

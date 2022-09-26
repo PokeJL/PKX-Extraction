@@ -40,21 +40,13 @@ namespace PKX_Extraction.Core.DataManager
                 Invert(buffer);
 
             if(length == 1)
-            {
                 value = ConOneHex(buffer[0]);
-            }
             if (length == 2)
-            {
                 value = Int16(buffer);
-            }
             if (length == 3)
-            {
                 value = Int24(buffer);
-            }
             if (length == 4)
-            {
                 value = Int32(buffer);
-            }
 
             return value;
         }
@@ -78,21 +70,13 @@ namespace PKX_Extraction.Core.DataManager
                 Invert(buffer);
 
             if (length == 1)
-            {
                 value = ConOneHex(buffer[0]);
-            }
             if (length == 2)
-            {
                 value = Int16(buffer);
-            }
             if (length == 3)
-            {
                 value = Int24(buffer);
-            }
             if (length == 4)
-            {
                 value = Int32(buffer);
-            }
 
             return value;
         }
@@ -107,9 +91,7 @@ namespace PKX_Extraction.Core.DataManager
         private void Extract(byte[] hex, byte[] buffer, int start, int length) 
         {
             for(int i = 0; i < length; i++)
-            {
                 buffer[i] = hex[i + start];
-            }
         }
 
         /// <summary>
@@ -122,16 +104,14 @@ namespace PKX_Extraction.Core.DataManager
         private void Extract2D(List<List<byte>> hex, byte[] buffer, int row, int start, int length)
         {
             for (int i = 0; i < length; i++)
-            {
                 buffer[i] = hex[row][i + start];
-            }
         }
 
         /// <summary>
         /// Inverts a 1D array
         /// </summary>
         /// <param name="buffer">Data needing to be inverted</param>
-        private static void Invert(byte[] buffer)
+        private void Invert(byte[] buffer)
         {
             int m = buffer.Length - 1;
             byte temp;
@@ -175,16 +155,12 @@ namespace PKX_Extraction.Core.DataManager
 
             Extract(data, dataBuffer, offset, length);
             if (length > 1)
-            {
                 Invert(dataBuffer);
-            }
 
             hexString = Convert.ToString(dataBuffer[0], 2).PadLeft(8, '0');
 
             for (int i  = 1; i < length; i++)
-            {
                 hexString += Convert.ToString(dataBuffer[i], 2).PadLeft(8, '0');
-            }
 
             return hexString;
         }

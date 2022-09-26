@@ -12,7 +12,7 @@ namespace PKX_Extraction.Core.DataManager
     /// </summary>
     public class Game_Values
     {
-        Game_Values_Data data = new ();
+        readonly Game_Values_Data data = new ();
 
         public int StorageDataSize { get; set; } = 0; //Size of Pokemon in the PC
         public int PartyDataSize { get; set; } = 0; //Size of Pokemon in the party

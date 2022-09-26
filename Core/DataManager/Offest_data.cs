@@ -16,7 +16,7 @@ namespace PKX_Extraction.Core.DataManager
     /// </summary>
     public class Offest_data
     {
-        Offset offset = new Offset();
+        Offset offset = new();
 
         public int PID { get; set; } = 0;
         public int SizePID { get; set; } = 0;

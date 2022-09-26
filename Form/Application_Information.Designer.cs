@@ -42,7 +42,7 @@
             this.ReleaseLBL.Name = "ReleaseLBL";
             this.ReleaseLBL.Size = new System.Drawing.Size(111, 15);
             this.ReleaseLBL.TabIndex = 0;
-            this.ReleaseLBL.Text = "Release: 20220920-1";
+            this.ReleaseLBL.Text = "Release: 20220925-1";
             // 
             // DevelopedLBL
             // 

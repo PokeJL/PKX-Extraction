@@ -23,9 +23,7 @@ namespace PKX_Extraction.Core.DataManager
             List<byte> temp = new List<byte>();
             a2d.Add(temp);
             for (int i = 0; i < column; i++)
-            {
                 a2d[row].Add(a1d[i]);
-            }
         }
 
         /// <summary>
@@ -37,9 +35,7 @@ namespace PKX_Extraction.Core.DataManager
         public void ArrayPart(byte[] recipiant, byte[] donor, int donorStart)
         {
             for (int i = 0; i < recipiant.Length; i++, donorStart++)
-            {
                 recipiant[i] = donor[donorStart];
-            }
         }
 
         /// <summary>

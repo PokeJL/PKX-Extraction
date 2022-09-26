@@ -8,10 +8,10 @@ namespace PKX_Extraction.Core.DataManager
 {
     class Validation_Data_Check
     {
-        Data_Conversion hex;
-        Offest_data offset_Data;
-        Array_Manager arr;
-        Bit_Check bit;
+        readonly Data_Conversion hex;
+        readonly Offest_data offset_Data;
+        readonly Array_Manager arr;
+        readonly Bit_Check bit;
 
         public Validation_Data_Check()
         {
@@ -107,7 +107,7 @@ namespace PKX_Extraction.Core.DataManager
         {
             if (option == 0 || option == 3) //PkRus single byte
             {
-                return bit.Pokerus(inputFile[offset_Data.Pkrus]);
+                return Bit_Check.Pokerus(inputFile[offset_Data.Pkrus]);
             }
             else if (option == 1) //PkRus Split in 2 bytes
             {
@@ -126,7 +126,7 @@ namespace PKX_Extraction.Core.DataManager
                 byte1 += byte2;
                 tempArr = Convert.FromHexString(byte1);
                 pkrus = tempArr[0];
-                return bit.Pokerus(pkrus);
+                return Bit_Check.Pokerus(pkrus);
             }
             else if (option == 2)
                 return true;

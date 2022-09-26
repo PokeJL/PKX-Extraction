@@ -23,12 +23,12 @@ namespace PKX_Extraction
         readonly File_Manager fm;
         readonly Data_Ripper rip;
         readonly Applicaton_Values val;
-        readonly Messages mess;
-        Offest_data offest;
-        Game_Values gv;
-        Gen12_Data_Fix fix;
+        readonly Offest_data offest;
+        readonly Game_Values gv;
+        readonly Gen12_Data_Fix fix;
+        readonly Gen_2_Beta_Data g2b;
         readonly List<string> list;
-        List<List<byte>> pokemon;
+        readonly List<List<byte>> pokemon;
 
         private delegate void DataSetMethodInvoker();
         public delegate void MaxProgressMethodInvoker(int amount);
@@ -43,10 +43,10 @@ namespace PKX_Extraction
             fm = new File_Manager();
             rip = new Data_Ripper();
             val = new Applicaton_Values();
-            mess = new Messages();
             offest = new();
             gv = new();
             fix = new();
+            g2b = new();
             pokemon = new List<List<byte>>();
 
             fm.MP += new File_Manager.MaxProgressMethodInvoker(SetAmount);
@@ -70,9 +70,7 @@ namespace PKX_Extraction
         {
             openFileDialog1.FileName = null;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
                 FileOpen();
-            }
         }
 
         /// <summary>
@@ -365,10 +363,15 @@ namespace PKX_Extraction
                             val.DexNum = dex.Gen3GetDexNum(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
                         else if (val.Gen == 1)
                             val.DexNum = dex.GetGen1Num(hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert));
+                        else if (val.Gen == 2 && val.SubGen == 2)
+                            val.DexNum = Convert.ToInt32(pokemon[0][3]);
                         else if (val.Gen > 1)
                             val.DexNum = hex.LittleEndian2D(pokemon, i, offest.Dex, offest.SizeDex, gv.Invert);
 
-                        ItemObject[i] = data.getPokemonName(val.DexNum);
+                        if (val.Gen == 2 && val.SubGen == 2)
+                            ItemObject[i] = g2b.GetNameString(val.DexNum);
+                        else
+                            ItemObject[i] = data.getPokemonName(val.DexNum);
                     }
                     pkmSelect.Items.AddRange(ItemObject);
                     pkmSelect.SelectedIndex = 0;
