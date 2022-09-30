@@ -37,12 +37,12 @@ namespace PKX_Extraction
         public PKX_Exctraction()
         {
             InitializeComponent();
-            hex = new Data_Conversion();
-            dex = new Dex_Conversion();
-            data = new Pokemon_Data();
-            fm = new File_Manager();
-            rip = new Data_Ripper();
-            val = new Applicaton_Values();
+            hex = new();
+            dex = new();
+            data = new();
+            fm = new();
+            rip = new();
+            val = new();
             offest = new();
             gv = new();
             fix = new();
@@ -250,53 +250,31 @@ namespace PKX_Extraction
                 {
                     //Set values for main line game
                     if (val.ComboSelect == 1)
-                    {
                         SetClasses(1, 0);
-                    }
                     if (val.ComboSelect == 2)
-                    {
                         SetClasses(2, 0);
-                    }
                     if (val.ComboSelect == 3)
-                    {
                         SetClasses(3, 0);
-                    }
                     if (val.ComboSelect == 4)
-                    {
                         SetClasses(4, 0);
-                    }
                     if (val.ComboSelect == 5)
-                    {
                         SetClasses(5, 0);
-                    }
                     if (val.ComboSelect == 6)
-                    {
                         SetClasses(6, 0);
-                    }
                     if (val.ComboSelect == 7)
-                    {
                         SetClasses(7, 0);
-                    }
                     if (val.ComboSelect == 8)
-                    {
                         SetClasses(8, 0);
-                    }
                 }
                 //Set values for spin off game
                 if (spinOffRBT.Checked == true) //Fix all when stadium is added
                 {
                     if (val.ComboSelect == 1)
-                    {
                         SetClasses(2, 2);
-                    }
                     if (val.ComboSelect == 2)
-                    {
                         SetClasses(3, 1);
-                    }
                     if (val.ComboSelect == 3)
-                    {
                         SetClasses(3, 2);
-                    }
                 }
                 //searches spin off game
                 if (spinOffRBT.Checked == true) //Fix when stadium is added
@@ -347,10 +325,7 @@ namespace PKX_Extraction
         private void BindComboBoxData()
         {
             if (pkmSelect.InvokeRequired)
-            {
-                // Worker thread.
-                pkmSelect.Invoke(new DataSetMethodInvoker(BindComboBoxData));
-            }
+                pkmSelect.Invoke(new DataSetMethodInvoker(BindComboBoxData));// Worker thread
             else
             {
                 object[] ItemObject = new object[val.Found];
@@ -391,9 +366,7 @@ namespace PKX_Extraction
         private void SetAmount(int amount)
         {
             if (RipProgressBar.InvokeRequired)
-            {
                 RipProgressBar.Invoke(new MaxProgressMethodInvoker(SetAmount), amount);
-            }
             else
             {
                 RipProgressBar.Maximum = amount;
@@ -408,13 +381,9 @@ namespace PKX_Extraction
         private void UpdateProgress(int amount)
         {
             if (RipProgressBar.InvokeRequired)
-            {
                 RipProgressBar.Invoke(new CurrentProgressMethodInvoker(UpdateProgress), amount);
-            }
             else
-            {
                 RipProgressBar.Value = amount;
-            }
         }
 
         /// <summary>
