@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace PKX_Extraction.Core.DataManager
 {
@@ -16,21 +12,10 @@ namespace PKX_Extraction.Core.DataManager
         /// <returns></returns>
         public static bool Pokerus(byte bit)
         {
-            Data_Conversion con = new();
-            string firstHalf;
-            string lastHalf;
-            int strain;
-            int days;
-            byte[] temp = new byte[1];
-            temp[0] = bit;
+            int strain = (bit >> 4);
+            int days = bit & 15;
 
             //Calc PKRus Stuff here
-            firstHalf = con.HexToBinaryString(temp, 0, 1); //Convert bit to a string
-            lastHalf = firstHalf.Substring(4, 4); //Stores last half of string
-            firstHalf = firstHalf.Substring(0, 4); //Stores first half of string
-            strain = Convert.ToInt32(firstHalf, 2); //Converts to int for the strain
-            days = Convert.ToInt32(lastHalf, 2); //Convert to int for days remaining
-
             if (strain == 0 && days == 0)
                 return true;
             else if (strain == 1 && days < 3)
@@ -74,16 +59,18 @@ namespace PKX_Extraction.Core.DataManager
         /// <returns></returns>
         public bool Orgins(byte[] data)
         {
-            Data_Conversion con = new();
-            string word;
-            int metLV;
-            int gender;
+            if (data[70] == 0 && data[71] == 0)
+                return false;
+            if (data[70] == 255 && data[71] == 255)
+                return false;
 
-            word = con.HexToBinaryString(data, 70, 2);
-            metLV = con.BinaryStringToInt(word, 0, 7);
-            gender = con.BinaryStringToInt(word, 15, 1);
+            ushort origins = ReadUInt16LittleEndian(data.AsSpan(0x46));
+            int metLV = origins & 127;
+            int gender = (origins >> 15) & 1;
+            int version = (origins >> 7) & 15;
+            int ball = (origins >> 11) & 15;
 
-            if (metLV < 101  && gender < 2)
+            if (metLV < 101 && gender < 2 && version < 6 && version != 0 && ball < 13 && ball != 0)
                 return true;
 
             return false;
@@ -93,28 +80,19 @@ namespace PKX_Extraction.Core.DataManager
         /// Gets each IV when stored in 4 bytes
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="offset"></param>
         /// <returns></returns>
-        public bool IV(byte[] data, int offset)
+        public bool IV(byte[] data)
         {
-            Data_Conversion con = new Data_Conversion();
-            string word;
-            int hp;
-            int att;
-            int def;
-            int spAtt;
-            int spDef;
-            int speed;
+            int iv = ReadInt32LittleEndian(data.AsSpan(0x48));
+            int hp = iv & 31;
+            int att = (iv >> 5) & 31;
+            int def = (iv >> 10) & 31;
+            int speed = (iv >> 15) & 31;
+            int spAtt = (iv >> 20) & 31;
+            int spDef = (iv >> 25) & 31;
+            //int ability = (iv >> 31) & 2; //might be wrong
 
-            word = con.HexToBinaryString(data, offset, 4); //Converts bytes to a string
-            hp = con.BinaryStringToInt(word, 0, 4);
-            att = con.BinaryStringToInt(word, 5, 4);
-            def = con.BinaryStringToInt(word, 10, 4);
-            speed = con.BinaryStringToInt(word, 15, 4);
-            spAtt = con.BinaryStringToInt(word, 20, 4);
-            spDef = con.BinaryStringToInt(word, 25, 4);
-
-            if (hp < 32 && att < 32 && def < 32 && speed < 32 && spAtt < 32 && spDef < 32)
+            if (hp < 32 && att < 32 && def < 32 && speed < 32 && spAtt < 32 && spDef < 32 /*&& ability < 3*/)
                 return true;
 
             return false;

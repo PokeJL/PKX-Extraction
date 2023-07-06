@@ -76,7 +76,7 @@ namespace PKX_Extraction.Core.DataManager
         {
             if (option == 0) //IVs stored in 3 bytes
             {
-                if (bit.IV(inputFile, offset_Data.IV))
+                if (bit.IV(inputFile))
                     return true;
             }
             else if (option == 1) //IVs stored in 6 bytes

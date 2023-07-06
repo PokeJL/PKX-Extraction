@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PKX_Extraction.Core.DataManager;
+﻿using System.Collections.Generic;
 
 namespace PKX_Extraction.Core.DataManager
 {
@@ -34,11 +29,13 @@ namespace PKX_Extraction.Core.DataManager
         /// <returns></returns>
         public bool IsPokemon(byte[] buffer, int currentDexNum, Applicaton_Values val, Offest_data offset_Data, Game_Values gv)
         {
+            //Temperarly holds the value that is being compared against
+            int tempVal = hex.LittleEndian(buffer, offset_Data.Move1, offset_Data.SizeMove1, gv.Invert); //Holds move 1
             //Move 1 has an actual move
-            if (!(hex.LittleEndian(buffer, offset_Data.Move1, offset_Data.SizeMove1, gv.Invert) != 0)) 
+            if (!(tempVal != 0)) 
                 return false;
             //Move 1 is a valid move
-            if (!(hex.LittleEndian(buffer, offset_Data.Move1, offset_Data.SizeMove1, gv.Invert) <= gv.NumOfMovesInGen)) 
+            if (!(tempVal <= gv.NumOfMovesInGen)) 
                 return false;
             //Move 2 is a valid move
             if (!(hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) <= gv.NumOfMovesInGen)) 
@@ -55,48 +52,59 @@ namespace PKX_Extraction.Core.DataManager
             //Not a glitch Pokemon
             if (!(hex.LittleEndian(buffer, offset_Data.Dex, offset_Data.SizeDex, gv.Invert) != 0)) 
                 return false;
+
+            //Move 1 block
             //Move 1 != Move 2
-            if (!(hex.LittleEndian(buffer, offset_Data.Move1, offset_Data.SizeMove1, gv.Invert) !=
-                hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert))) 
+            if (!(tempVal != hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert))) 
                 return false;
             //Move 1 != Move 3
-            if (!(hex.LittleEndian(buffer, offset_Data.Move1, offset_Data.SizeMove1, gv.Invert) !=
-                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert))) 
+            if (!(tempVal != hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert))) 
                 return false;
             //Move 1 != Move 4
-            if (!(hex.LittleEndian(buffer, offset_Data.Move1, offset_Data.SizeMove1, gv.Invert) !=
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert))) 
+            if (!(tempVal != hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert))) 
                 return false;
-            //2 != 3 OR 2 AND 3 == 0
-            if (!((hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) !=
-                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert)) ||
-                (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0)))
-                return false;
-            //2 == 0 AND 3 == 0
-            if (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) != 0)
-                return false;
-            //2 != 4 OR 2 AND 4 == 0
-            if (!((hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) !=
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert)) ||
-                (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) == 0))) 
-                return false;
-            //2 == 0 AND 4 == 0
-            if (hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) != 0)
-                return false;
-            //3 != 4 OR 3 AND 4 == 0
-            if (!((hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) !=
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert)) ||
-                (hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) == 0))) 
-                return false;
-            //3 == 0 AND 4 == 0
-            if (hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) == 0 &&
-                hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) != 0)
-                return false;
+
+            //move 2 block
+            tempVal = hex.LittleEndian(buffer, offset_Data.Move2, offset_Data.SizeMove2, gv.Invert); //Holds move 2
+            //2 is a move
+            if (tempVal != 0)
+            {
+                //2 != 3
+                if (!(tempVal != hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert)))
+                    return false;
+
+                //2 != 4
+                if (!(tempVal != hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert))) 
+                    return false;
+            }
+            else //2 is 0
+            {
+                //2 == 0 AND 3 == 0
+                if (hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert) != 0)
+                    return false;
+            
+                //2 == 0 AND 4 == 0
+                if (hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) != 0)
+                    return false;
+            }
+
+
+            //Move 3 block
+            tempVal = hex.LittleEndian(buffer, offset_Data.Move3, offset_Data.SizeMove3, gv.Invert); //holds move 3
+            //3 is a move
+            if (tempVal != 0)
+            {
+                //3 != 4
+                if (!(tempVal != hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert))) 
+                    return false;
+            }
+            else
+            {
+                //3 == 0 AND 4 == 0
+                if (hex.LittleEndian(buffer, offset_Data.Move4, offset_Data.SizeMove4, gv.Invert) != 0)
+                    return false;
+            }
+            
             // EV total does not exceed limit
             if (!vdc.EV(buffer, gv.EffortTotal, gv.Invert, val.Gen, val.SubGen, gv.Option)) 
                 return false;
